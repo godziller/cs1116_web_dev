@@ -1,6 +1,7 @@
-{% extends "base.html" %}
-{% block main_content %}
-<table>
-    <tr>
-    {% for n in list_of_numbers %}
-    <td>{{n}}</td>
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Lotto {% endblock %}</h1>
+    <h1>These are your lotto numbers</h1>
+    <h3>{{ list_of_numbers  }}</h3>
+{% endblock %}
