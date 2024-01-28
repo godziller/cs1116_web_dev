@@ -1,6 +1,6 @@
 from flask import Flask, render_template
-import random
-# from random import choice, random
+#import random
+from random import choice, randint
 
 app= Flask(__name__) 
 
@@ -20,11 +20,12 @@ def rps(player):
         print("Win")
         return render_template("rps.html",player=player,website=website,result = "YOU WINNN!")
     elif player == "scissors" and website == "paper":
-        print("Win")
+        print("Winnner")
         return render_template("rps.html",player=player,website=website,result = "YOU WINNN!")
     else: 
         print("Looser")
         return render_template("rps.html",player=player,website=website,result = "....you lost...COMPUTER WINS!")
+ 
 
 
 @app.route("/could_it_be_me")
@@ -32,7 +33,7 @@ def send_lotto_numbers():
     numbers_list = []
 
     while len(numbers_list) != 6:
-        n = random.randint(1,47)
+        n = randint(1,47)
         print("Random = ", n)
         if n not in numbers_list:
             numbers_list.append(n)
