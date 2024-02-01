@@ -1,19 +1,20 @@
 
 {%extends "base.html"%}
-{%block main_content %}
+{%block content %}
 
-<h1>testing</h1>
-<form action="" method="post">
-    <label for="firstName">Enter your message: </label>
+<h1>Enter your name.</h1>
+
+<form action="" method="POST">
+    <label for="firstName">Enter your First Name: </label>
     <input type="text" size = "30" name="firstName" id="firstName" value="{{firstName}}"/>
     <br>
-    <label for="secondName">Enter your message: </label>
+    <label for="secondName">Enter your Second Name: </label>
     <input type="text" size = "30" name="secondName" id="secondName", value="{{secondName}}"/>
     <br>
     <input type="submit">
 
   
-</form>>
+</form>
 
  
 {%endblock%}
