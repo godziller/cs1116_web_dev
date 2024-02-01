@@ -43,8 +43,8 @@ def morse():
             else:
                 break
 
-@app.route("/morse", methods=["GET","POST"])
-def morse():
+@app.route("/convert", methods=["GET","POST"])
+def convert():
     if request.method == "GET":
         error_message = ""
 
