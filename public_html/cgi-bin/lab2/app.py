@@ -51,18 +51,20 @@ def convert():
             try:
                 inches = request.form["inches"]
                 centimeters = request.form["cm"]
-                lastInput = ''
+                lastInputCm = ''
+                lastInputInches = ''
+
                 #to do 
-                if centimeters != lastInput:
-                    print('cm full')
+                if centimeters != lastInputInches:
+                    print(lastInputInches)
                     centimeters = float(centimeters)
-                    lastInput = round(centimeters / 2.54, 2)
-                    return render_template("convert_form.html", cm=centimeters, inches=lastInput)
-                elif inches != lastInput:
-                    print('inches full')
+                    lastInputCm = round(centimeters / 2.54, 2)
+                    return render_template("convert_form.html", cm=centimeters, inches=lastInputCm)
+                elif inches != lastInputCm:
+                    print(lastInputCm)
                     inches = float(inches)
-                    lastInput = round(inches * 2.54, 2)
-                    return render_template("convert_form.html", cm=lastInput, inches=inches)
+                    lastInputInches = round(inches * 2.54, 2)
+                    return render_template("convert_form.html", cm=lastInputInches, inches=inches)
                 
                   
 
