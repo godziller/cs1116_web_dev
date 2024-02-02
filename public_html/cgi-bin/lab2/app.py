@@ -15,7 +15,6 @@ def spy():
 @app.route("/morse", methods=["GET","POST"])
 def morse():
     if request.method == "GET":
-        error_message = ""
 
         return render_template("morse_form.html",error_message="")
     else:
@@ -46,7 +45,39 @@ def morse():
 @app.route("/convert", methods=["GET","POST"])
 def convert():
     if request.method == "GET":
-        error_message = ""
-
-        return render_template("morse_form.html",error_message="")
+        return render_template("convert_form.html",error_message="")
+    else:
+        while True:
+            try:
+                inches = request.form["inches"]
+                centimeters = request.form["cm"]
+                lastInput = ''
+                #to do 
+                if centimeters != lastInput:
+                    print('cm full')
+                    centimeters = float(centimeters)
+                    lastInput = round(centimeters / 2.54, 2)
+                    return render_template("convert_form.html", cm=centimeters, inches=lastInput)
+                elif inches != lastInput:
+                    print('inches full')
+                    inches = float(inches)
+                    lastInput = round(inches * 2.54, 2)
+                    return render_template("convert_form.html", cm=lastInput, inches=inches)
                 
+                  
+
+
+                    
+                
+              #  else:
+                #    raise ValueError("nothing entered")
+
+                return render_template("convert_form.html")
+
+            except:
+                print("error here")
+                error_message = "please enter something proper into the box :/"
+                return render_template("convert_form.html", error_message=error_message)
+            else:
+                break
+
