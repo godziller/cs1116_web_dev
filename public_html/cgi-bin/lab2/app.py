@@ -51,34 +51,32 @@ def convert():
             try:
                 inches = request.form["inches"]
                 centimeters = request.form["cm"]
-                lastInputCm = ''
-                lastInputInches = ''
+                blank = ''
 
                 #to do 
-                if centimeters != lastInputInches:
-                    print(lastInputInches)
+                if centimeters != blank and inches == blank:
+                    print("testing cm")
                     centimeters = float(centimeters)
-                    lastInputCm = round(centimeters / 2.54, 2)
-                    return render_template("convert_form.html", cm=centimeters, inches=lastInputCm)
-                elif inches != lastInputCm:
-                    print(lastInputCm)
+                    lastInputInches = round(centimeters / 2.54, 2)
+                    return render_template("convert_form.html", cm=centimeters, inches=lastInputInches  )
+                
+                elif inches != blank and centimeters == blank:
+                    print("testing inches")
                     inches = float(inches)
-                    lastInputInches = round(inches * 2.54, 2)
-                    return render_template("convert_form.html", cm=lastInputInches, inches=inches)
-                
-                  
-
-
+                    lastInputCm = round(inches * 2.54, 2)
+                    return render_template("convert_form.html", cm=lastInputCm, inches=inches)
+                 
                     
-                
-              #  else:
-                #    raise ValueError("nothing entered")
-
-                return render_template("convert_form.html")
+                elif centimeters == blank and inches == blank:
+                    error_message = "please enter something into ONE of your boxes:/"
+                    raise ValueError("nothing entered")
+                elif centimeters != blank and inches != blank:
+                    error_message = "please empty one of your boxes in future:/"
+                    raise ValueError("boxes full")
 
             except:
                 print("error here")
-                error_message = "please enter something proper into the box :/"
+                error_message = "please enter a value into ONE of the boxes in future :/"
                 return render_template("convert_form.html", error_message=error_message)
             else:
                 break

@@ -1,0 +1,28 @@
+{%extends "base.html"%}
+{%block main_content %}
+
+<form action="" method="POST" novalidate> 
+
+    {{form.hidden_tag()}}
+
+    {{form.wombat.label}}
+    {{form.wombat()}}
+    {% for error in form.weight.errors %} ONLT IF YOU HAVE VALIDATING 
+        {{error}}
+    {% endfor %}
+    <br/>
+    {{form.submit()}}
+
+    <IMG src="{{ url_for('static', filename='wombat.jpg') }}" alt="A wombat"/>
+
+</form>
+
+<p>{{outcome}}</p>
+
+<p href="{{url_for('functionName')}}"></p>
+
+{{error}}
+ 
+{%endblock%}
+
+cross-site request forgery (CSRF)
