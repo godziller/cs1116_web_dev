@@ -1,0 +1,39 @@
+body{
+    background-color: powderblue;
+}
+
+form {
+    border: 2px solid blue;
+    padding: 2em;
+    margin: 5em auto;
+    background-color: azure;
+    position: relative;
+}
+    
+label {
+    float: left;
+    width: 5em;
+    text-align: right;
+    clear: left;
+    margin-right: 1em;
+    
+}
+    
+input[type="text"] {
+    margin-bottom: 1em;
+}
+    
+img {
+    display: block;margin-top: 1.5em;
+
+}
+
+#bonzi{
+    position: absolute;
+    margin-left: 95em;
+    margin-right: auto;
+    margin-top: 15em;
+    height: 25%;
+    width: 8%;
+    
+}
