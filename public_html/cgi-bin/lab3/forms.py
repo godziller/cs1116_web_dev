@@ -7,14 +7,18 @@ class shift_form(FlaskForm):
     submit = SubmitField("Submit")
     plainText = StringField("Plaintext:", validators=[InputRequired()])
     shift = IntegerField('Shift', validators=[InputRequired()])
-    cipherText = StringField('Ciphertext:')
+    cipherText = StringField("Ciphertext:")
 
 
 class conversion_form(FlaskForm):
     base = RadioField(choices=['Fahrenheit', 'Celsius', 'Kelvin'], default='Fahrenheit')
-    baseValue = DecimalField(validators=[InputRequired()])
+    baseValue = IntegerField(validators=[InputRequired()])  
 
     output = RadioField(choices=['Fahrenheit', 'Celsius', 'Kelvin'], default='Fahrenheit')
-    outValue = DecimalField()
-  
+    outValue = IntegerField()
+    
+    submit = SubmitField()
+
+    error = StringField()
+
     

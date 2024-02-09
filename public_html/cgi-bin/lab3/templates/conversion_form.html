@@ -7,25 +7,23 @@
 
     {{form.hidden_tag()}}
 
-    {{form.base.label}}
     {{form.base()}}
 
     
-    {{form.input.label}}
-    {{form.input()}}
+    {{form.baseValue()}}
 
 
     <h1>To:</h1>
     
+    {{form.output()}}
 
+    {{form.outValue(disabled=True)}}
 
     <br>
     {{form.submit()}}
 
 
 </form>
-
-<p>{{outcome}}</p>
 
 
 {{error}}
