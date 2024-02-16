@@ -1,0 +1,36 @@
+{%extends "base.html"%}
+{%block content %}
+
+<form action="" method="POST" novalidate>
+
+    {{form.hidden_tag()}}
+
+    {{form.country.label}}
+    {{form.country()}}
+    {% for error in form.country.errors %}
+    {{error}}
+    {% endfor %}
+    <br>
+    {{form.submit()}}
+</form>
+
+{% if countries  %}
+<table>
+    <caption>{{caption}}</caption>
+    {% for performances in countries %}
+    <tr>
+        <td>{{ performances['year'] }}</td>
+        <td>{{ performances['country'] }}</td>
+        <td>{{ performances['song'] }}</td>
+        <td>{{ performances['performer'] }}</td>
+        <td>{{ countries['points'] }}</td>
+    </tr>
+    {% endfor%}
+</table>
+{% endif %}
+
+{{error}}
+
+{% endblock %}
+
+cross-site request forgery (CSRF)
