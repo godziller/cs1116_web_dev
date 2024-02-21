@@ -4,7 +4,7 @@ from flask import Flask, render_template
 
 
 '''
-This section are all useer login route functions
+This section are all user login route functions
 '''
 
 # @app.route("/register", methods=["GET", "POST"]) TODO:
