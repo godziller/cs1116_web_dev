@@ -7,6 +7,6 @@ CREATE TABLE tasks (
 
 INSERT INTO tasks (testString, testInt)
 VALUES
-    ('testing testing', 10)
+    ('testing testing', 10),
+    ('testing 2', 11)
 
-SELECT * FROM tasks 

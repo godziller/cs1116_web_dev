@@ -1,6 +1,3 @@
-# Database structure for Users #TODO:
-
-#date, priority and string(description of task), unique task identifier 
 
 CREATE TABLE tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,16 +17,12 @@ CREATE TABLE users (
     password TEXT
 );
 
-#Database structure for Tasks
 
 INSERT INTO tasks (id, userId, title, description, due_date, priority, status)
 VALUES
     (1,10,'testing title', 'testing description', '8/10/2004', 'High', 'New')
-
-
 ; 
 
-SELECT * FROM tasks
 
 
-# Database structure for Projects
+

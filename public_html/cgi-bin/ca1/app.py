@@ -1,8 +1,11 @@
 from flask import Flask, render_template, url_for, session, redirect
-from forms import shift_form, conversion_form
+from forms import todo_form
 from flask_session import Session
 from database import get_db, close_db
 
+
+app = Flask(__name__)
+app.config["SECRET_KEY"] = "this-is-my-secret-key"
 
 '''
 This section are all user login route functions
@@ -45,8 +48,11 @@ This section are all task route functions
 '''
 this section are all project route functions
 '''
-# @app.route("/add_project", methods=["GET", "POST"]) TODO:
-# def add_project():
+@app.route("/add_project", methods=["GET", "POST"]) #TODO:
+def add_project():
+    form = todo_form()
+    return render_template("todo_form.html", form=form)
+
 
 # @app.route("/delete_project", methods=["GET", "POST"]) TODO:
 # def delete_project():
