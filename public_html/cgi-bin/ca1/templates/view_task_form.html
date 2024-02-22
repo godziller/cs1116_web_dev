@@ -1,0 +1,28 @@
+{%extends "base.html"%}
+{%block content %}
+
+<form action="" method="POST" novalidate> 
+
+{% if tasks  %}
+    
+    <table>
+        <caption>{{caption}}</caption>
+        {% for indivTask in task %}
+        <tr>
+            <td>{{ indivTask['title'] }}</td>
+            <td>{{ indivTask['description'] }}</td>
+            <td>{{ indivTask['dueDate'] }}</td>
+            <td>{{ indivTask['priority'] }}</td>
+            <td>{{ indivTask['status'] }}</td>
+        </tr>
+        {% endfor%}
+    </table>
+</form>
+
+{{message}}
+
+{{error}}
+ 
+{%endblock%}
+
+cross-site request forgery (CSRF)

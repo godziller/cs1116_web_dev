@@ -1,0 +1,24 @@
+{%extends "base.html"%}
+{%block content %}
+
+<form action="" method="POST" novalidate> 
+
+    {{form.hidden_tag()}}
+
+    {{form.description.label}}
+    {{form.description()}}
+    <br>
+    {{form.dueDate.label}}
+    {{form.dueDate()}}
+    <br>
+    {{form.importance.label}}
+    {{form.importance()}}
+
+</form>
+
+
+{{error}}
+ 
+{%endblock%}
+
+cross-site request forgery (CSRF)
