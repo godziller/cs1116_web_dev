@@ -13,15 +13,23 @@ CREATE TABLE tasks (
 );
 
 CREATE TABLE users (
-    userId INTEGER PRIMARY KEY AUTOINCREMENT
+    userId INTEGER PRIMARY KEY AUTOINCREMENT,
     surname TEXT,
     firstname TEXT,
     email TEXT,
-    password TEXT,
-)
+    password TEXT
+);
 
 #Database structure for Tasks
 
+INSERT INTO tasks (id, userId, title, description, due_date, priority, status)
+VALUES
+    (1,10,'testing title', 'testing description', '8/10/2004', 'High', 'New')
+
+
+; 
+
+SELECT * FROM tasks
 
 
 # Database structure for Projects

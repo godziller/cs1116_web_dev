@@ -44,6 +44,12 @@ def mineWinners():
         print("Country result:", countryResult)
         print("Points result:", pointsResult)
 
+        if country == ''  and points == '':
+             countries = db.execute("""SELECT performer FROM winners """, ).fetchall()
+        elif country != '' and points == '':
+            
+
+
         if countryResult > 0 and pointsResult > 0:
             # Both country and points are provided
             print('the big ones')
