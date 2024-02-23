@@ -14,10 +14,9 @@ Session(app)
 def guess():
     if "secret_number" not in session:
         session["secret_number"] = randint(1,100)
-        print(session)
-    
+        # new game, create new random number and store in session
+ 
     friend_number = session["secret_number"]
-    print(type(friend_number))
     print(friend_number)
     msg = ""
 
@@ -25,8 +24,8 @@ def guess():
 
     if form.validate_on_submit():
         guess = form.guess.data
-        print (guess)
-
+        print(guess)
+ 
         if guess > friend_number:
             msg = "Too high, guess again"
         elif guess < friend_number:
@@ -34,5 +33,10 @@ def guess():
         else:
             msg = "Correct - well done"
             session.pop("secret_number")
+            # Game over - get rid of secret_number so we could go again
     return render_template("guess_form.html", form=form, message = msg)
-            
+
+
+@app.route("/index.html")
+def index():
+    return redirect(url_for('guess'))
