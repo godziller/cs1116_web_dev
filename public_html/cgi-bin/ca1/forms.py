@@ -8,6 +8,7 @@ class create_task_form(FlaskForm):
     description = StringField("Plaintext:", validators=[InputRequired()])
     dueDate = DateField()
     importance = SelectField()
+    submit = SubmitField("add")
 
 class login_form(FlaskForm):
 
