@@ -1,28 +1,33 @@
-{%extends "base.html"%}
-{%block content %}
+{% extends "base.html" %}
+{% block content %}
 
 <form action="" method="POST" novalidate> 
 
-    <h1>From:</h1>
+    <h1>Do you feel lucky punk???</h1>
 
-    {{form.hidden_tag()}}
+    {{ form.hidden_tag() }}
 
+    <div>
+        {{ form.guess.label }}
+        {{ form.guess() }}
+    </div>
 
-    {{form.number.label}}
-    {{form.number()}}
+    <div>
+        {{ form.submit() }}
+    </div>
+
+    <div>
+        {% for error in form.guess.errors %}
+            <p style="color: red;">{{ error }}</p>
+        {% endfor %}
+    </div>
 
     {{ message }}
 
-
-
-    
-
-
 </form>
 
-
-{{error}}
+{{ error }}
  
-{%endblock%}
+{% endblock %}
 
 cross-site request forgery (CSRF)

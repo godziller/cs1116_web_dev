@@ -1,39 +1,60 @@
-body{
+html {
     background-color: powderblue;
+}
+
+body {
+    width: 80%;
+    margin: 0 auto;
+    background-color: powderblue;
+
+}
+
+header, footer {
+    color: white;
+    background-color: black;
+    padding: 10em;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav ul {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+nav a:any-link {
+    display: block;
+    border: 1px solid blue;
+    background-color: white;
+    color: blue;
+    padding: 1em;
+    text-decoration: none;
+}
+
+main {
+    padding: 2em;
+    margin-top: 2em;
 }
 
 form {
     border: 2px solid blue;
     padding: 2em;
-    margin: 5em auto;
+    margin: 2em auto 0; 
     background-color: azure;
-    position: relative;
 }
-    
+
 label {
     float: left;
-    width: 5em;
+    width: 10em;
     text-align: right;
     clear: left;
     margin-right: 1em;
-    
 }
-    
+
 input[type="text"] {
     margin-bottom: 1em;
-}
-    
-img {
-    display: block;margin-top: 1.5em;
-
-}
-
-#bonzi{
-    position: absolute;
-    margin-left: 95em;
-    margin-right: auto;
-    margin-top: 15em;
-    height: 25%;
-    width: 8%;
-    
 }

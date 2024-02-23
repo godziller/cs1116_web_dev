@@ -1,24 +1,11 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, SelectField, RadioField, IntegerField, DecimalField
-from wtforms.validators import InputRequired
+from wtforms import SubmitField, IntegerField
+from wtforms.validators import InputRequired, NumberRange
 
-class shift_form(FlaskForm):
+class GuessForm(FlaskForm):
 
+    guess = IntegerField('Guess a number between 1-100', 
+                         validators=[InputRequired(message="Please enter a number"), 
+                                     NumberRange(min=1, max=100, message="Keep it between the ditches!!")])
     submit = SubmitField("Submit")
-    plainText = StringField("Plaintext:", validators=[InputRequired()])
-    shift = IntegerField('Shift', validators=[InputRequired()])
-    cipherText = StringField("Ciphertext:")
 
-
-class conversion_form(FlaskForm):
-    base = RadioField(choices=['Fahrenheit', 'Celsius', 'Kelvin'], default='Fahrenheit')
-    baseValue = IntegerField(validators=[InputRequired()])  
-
-    output = RadioField(choices=['Fahrenheit', 'Celsius', 'Kelvin'], default='Fahrenheit')
-    outValue = IntegerField()
-    
-    submit = SubmitField()
-
-    error = StringField()
-
-    
