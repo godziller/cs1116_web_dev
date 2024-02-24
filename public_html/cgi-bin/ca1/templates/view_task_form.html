@@ -2,9 +2,7 @@
 {%block content %}
 
 <form action="" method="POST" novalidate> 
-
-{% if tasks  %}
-    
+    {% if tasks  %}
     <table>
         <caption>{{caption}}</caption>
         {% for indivTask in task %}
@@ -17,6 +15,8 @@
         </tr>
         {% endfor%}
     </table>
+    {endif}
+
 </form>
 
 {{message}}

@@ -11,11 +11,10 @@ class create_task_form(FlaskForm):
     submit = SubmitField("add")
 
 class login_form(FlaskForm):
+    user_id = StringField("User id: ", validators=[InputRequired()])
+    password = StringField("Password: ", validators=[InputRequired()])
+    submit = SubmitField("Log In")
 
-    firstName = StringField('Your first name: ', validators=[InputRequired()])
-    surname = StringField('Your surname: ', validators=[InputRequired()])
-    email = StringField('Your email: ', validators=[InputRequired()])
-    password = StringField('password: ', validators=[InputRequired()])
 
 class logout_form(FlaskForm):
     logout = SelectField('Logout')
@@ -23,3 +22,9 @@ class logout_form(FlaskForm):
 class view_task_form(FlaskForm):
     message = StringField()
     
+
+class register_form(FlaskForm):
+    user_id = StringField("User id: ", validators=[InputRequired()])
+    password = StringField("Password: ", validators=[InputRequired()])
+    password2 = StringField("Repeat Password: ", validators=[InputRequired()])    
+    submit = SubmitField("Register")
