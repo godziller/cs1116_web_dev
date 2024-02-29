@@ -20,9 +20,11 @@ CREATE TABLE users (
 
 INSERT INTO tasks (id, userId, title, description, due_date, priority, status)
 VALUES
-    (1,10,'testing title', 'testing description', '2024-12-08', 'High', 'pending')
+    (2,11,'testing title', 'testing description', '2025-12-08', 'High', 'pending')
     
-; 
+;
+
+select * from tasks;
 
 DELETE FROM tasks
 

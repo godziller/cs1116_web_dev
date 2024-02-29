@@ -99,12 +99,7 @@ def get_upcoming_tasks():
     form = view_task_form()
     db = get_db()
     tasks = db.execute("""SELECT * FROM tasks;""").fetchall()
-    """
-    tasks = [
-        {'title': 'Task 1', 'description': 'Description 1', 'dueDate': '2024-03-01', 'priority': 'High', 'status': 'Pending'},
-        {'title': 'Task 2', 'description': 'Description 2', 'dueDate': '2024-03-05', 'priority': 'Low', 'status': 'Completed'}
-    ]
-    """
+ 
     return render_template("view_task_form.html", form=form, tasks=tasks, caption='Upcoming Tasks')
 
 
