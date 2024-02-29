@@ -36,7 +36,7 @@ def register():
                 (user_id, generate_password_hash(password)))
             db.commit()
             return redirect( url_for("Login"))    
-    return render_template("register.html", form=form)
+    return render_template("register_form.html", form=form)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -59,7 +59,7 @@ def login():
             if not next_page:
                 next_page = url_for("index")
             return redirect(next_page)
-    return render_template("login.html", form=form)
+    return render_template("login_form.html", form=form)
 
 
 @app.route("/logout", methods=["GET", "POST"]) 
@@ -84,7 +84,7 @@ def list_tasks():
 # @app.route("/update_task", methods=["GET", "POST"]) TODO:
 # def update_task():
 
-# @app.route("/delete_task", methods=["GET", "POST"]) TODO:
+# @app.route("/delete_task", methods=["GET", "POST"]) TODO: 
 # def delete_task():
 
 @app.route("/add_task", methods=["GET", "POST"]) #TODO:
@@ -97,7 +97,17 @@ def add_task():
 def get_upcoming_tasks():
 # for today, for this week, for time window?
     form = view_task_form()
-    return render_template("view_task_form.html", form=form)
+    db = get_db()
+    tasks = db.execute("""SELECT * FROM tasks;""").fetchall()
+    '''
+    tasks = [
+        {'title': 'Task 1', 'description': 'Description 1', 'dueDate': '2024-03-01', 'priority': 'High', 'status': 'Pending'},
+        {'title': 'Task 2', 'description': 'Description 2', 'dueDate': '2024-03-05', 'priority': 'Low', 'status': 'Completed'}
+    ]
+    '''
+
+    return render_template("view_task_form.html", form=form, tasks=tasks, caption='Upcoming Tasks')
+
 
 '''
 this section are all project route functions

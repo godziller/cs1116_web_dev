@@ -1,11 +1,19 @@
-{%extends "base.html"%}
-{%block content %}
+
+{% extends "base.html" %}
+{% block content %}
 
 <form action="" method="POST" novalidate> 
-    {% if tasks  %}
+    {% if tasks %}
     <table>
-        <caption>{{caption}}</caption>
-        {% for indivTask in task %}
+        <caption>{{ caption }}</caption>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Status</th>
+        </tr>
+        {% for indivTask in tasks %}
         <tr>
             <td>{{ indivTask['title'] }}</td>
             <td>{{ indivTask['description'] }}</td>
@@ -13,16 +21,15 @@
             <td>{{ indivTask['priority'] }}</td>
             <td>{{ indivTask['status'] }}</td>
         </tr>
-        {% endfor%}
+        {% endfor %}
     </table>
-    {endif}
-
+    {% else %}
+    <p>No tasks set</p>
+    {% endif %}
 </form>
 
-{{message}}
+{{ message }}
 
-{{error}}
+{{ error }}
  
-{%endblock%}
-
-cross-site request forgery (CSRF)
+{% endblock %}

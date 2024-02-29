@@ -20,7 +20,8 @@ CREATE TABLE users (
 
 INSERT INTO tasks (id, userId, title, description, due_date, priority, status)
 VALUES
-    (1,10,'testing title', 'testing description', '8/10/2004', 'High', 'New')
+    (1,10,'testing title', 'testing description', '8/10/2004', 'High', 'pending')
+    
 ; 
 
 
