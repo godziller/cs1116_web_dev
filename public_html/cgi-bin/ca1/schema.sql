@@ -1,7 +1,7 @@
 
 CREATE TABLE tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    userId INTEGER KEY,
+    user_id INTEGER KEY,
     title TEXT NOT NULL,
     description TEXT,
     due_date DATE,
@@ -9,16 +9,16 @@ CREATE TABLE tasks (
     status TEXT DEFAULT 'New'
 );
 
-CREATE TABLE users (
-    userId INTEGER PRIMARY KEY AUTOINCREMENT,
-    surname TEXT,
-    firstname TEXT,
-    email TEXT,
-    password TEXT
-);
+    CREATE TABLE users (
+        user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        surname TEXT,
+        first_name TEXT,
+        email TEXT,
+        password TEXT
+    );
 
 
-INSERT INTO tasks (id, userId, title, description, due_date, priority, status)
+INSERT INTO tasks (id, user_id, title, description, due_date, priority, status)
 VALUES
     (2,11,'testing title', 'testing description', '2025-12-08', 'High', 'pending')
     
@@ -27,7 +27,7 @@ VALUES
 select * from tasks;
 
 select * from users
-DELETE FROM tasks
-
+DELETE FROM users
+DROP TABLE users
 
 

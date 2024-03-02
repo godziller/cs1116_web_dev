@@ -19,15 +19,45 @@ This section are all user login route functions
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = register_form()
+
     if form.validate_on_submit():
-        print('HERE ')
+        user_id = generate_user_id()  # Generate user ID
+        password = form.password.data
+        email = form.email.data
+        first_name = form.first_name.data
+        surname = form.surname.data
+        print('got here')
 
-        
+        db = get_db()
+        conflict_user = db.execute(
+            """SELECT * FROM users 
+               WHERE user_id = ?;""", (user_id,)).fetchone()
+
+        if conflict_user is not None:
+            return "Username is already taken"
+        else:
+            print('here')
+            db.execute("""
+                INSERT INTO users(user_id, password,first_name,surname,email)
+                VALUES (?,?,?,?,?);""", 
+                (user_id, generate_password_hash(password),first_name,surname,email))
+            db.commit()
+            return redirect(url_for("login"))    
+    return render_template("register_form.html", form=form)
     
-
-       
-
-    return render_template('register_form.html', form=form)
+    
+    
+def generate_user_id():
+    db = get_db()
+    print('stuck here')
+    last_user = db.execute(
+        """SELECT user_id FROM users 
+           ORDER BY user_id DESC
+           LIMIT 1;""").fetchone()
+    if last_user is None:
+        return 1
+    else:
+        return last_user["user_id"] + 1
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

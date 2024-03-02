@@ -25,11 +25,9 @@ class view_task_form(FlaskForm):
     
 
 class register_form(FlaskForm):
-    user_id = StringField("User ID: ", validators=[InputRequired()])
-    password = PasswordField("Password: ", validators=[InputRequired()])
+    password = PasswordField("Password: ", validators=[InputRequired(message='password')])
     confirm_password = PasswordField("Confirm Password: ", validators=[InputRequired()])
     email = StringField("Email: ", validators=[InputRequired()])
     first_name = StringField("First Name: ", validators=[InputRequired()])
     surname = StringField("Surname: ", validators=[InputRequired()])
     submit = SubmitField("Register")
-    
