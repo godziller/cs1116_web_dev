@@ -12,7 +12,7 @@ class create_task_form(FlaskForm):
     
 
 class login_form(FlaskForm):
-    user_id = StringField("User id: ", validators=[InputRequired()])
+    email = StringField("Email: ", validators=[InputRequired()])
     password = StringField("Password: ", validators=[InputRequired()])
     submit = SubmitField("Log In")
 

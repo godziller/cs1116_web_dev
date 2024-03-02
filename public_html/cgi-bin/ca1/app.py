@@ -63,19 +63,19 @@ def generate_user_id():
 def login():
     form = login_form()
     if form.validate_on_submit():
-        user_id = form.user_id.data
+        email = form.email.data
         password = form.password.data
         db = get_db()
         user = db.execute(
             """SELECT * FROM users 
-               WHERE user_id = ?;""", (user_id,)).fetchone()     
+               WHERE email = ?;""", (email,)).fetchone()     
         if user is None:   
-            form.user_id.errors.append("Username or password is incorrect")
+            form.email.errors.append("email or password is incorrect")
         elif not check_password_hash(user["password"], password):
             form.password.errors.append("Username or password is incorrect")
         else:
             session.clear()
-            session["user_id"] = user_id
+            session["email"] = email
             next_page = request.args.get("next")
             if not next_page:
                 next_page = url_for("index")
