@@ -26,6 +26,7 @@ VALUES
 
 select * from tasks;
 
+select * from users
 DELETE FROM tasks
 
 

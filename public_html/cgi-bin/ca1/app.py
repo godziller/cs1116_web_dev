@@ -16,27 +16,18 @@ Session(app)
 This section are all user login route functions
 '''
 
-@app.route("/register", methods=["GET", "POST"]) #TODO:
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = register_form()
     if form.validate_on_submit():
-        user_id = form.user_id.data
-        password = form.password.data
-        password2 = form.password2.data
-        db = get_db()
-        conflict_user = db.execute(
-            """SELECT * FROM users 
-               WHERE user_id = ?;""", (user_id,)).fetchone()
-        if conflict_user is not None:
-            form.user_id.errors.append("Username is already taken")
-        else:
-            db.execute("""
-                INSERT INTO user(user_id, password)
-                VALUES (?,?):""", 
-                (user_id, generate_password_hash(password)))
-            db.commit()
-            return redirect( url_for("Login"))    
-    return render_template("register_form.html", form=form)
+        print('HERE ')
+
+        
+    
+
+       
+
+    return render_template('register_form.html', form=form)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():

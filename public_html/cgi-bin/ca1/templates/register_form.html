@@ -5,9 +5,21 @@
 
     {{form.hidden_tag()}}
 
-    {{ form.user_id.label }}
-    {{ form.user_id() }}
-    {% for error in form.user_id.errors %}
+    {{ form.first_name.label }}
+    {{ form.first_name() }}
+    {% for error in form.first_name.errors %}
+        {{error}}
+    {% endfor %}
+    <br>
+    {{ form.surname.label }}
+    {{ form.surname() }}
+    {% for error in form.surname.errors %}
+        {{error}}
+    {% endfor %}
+    <br>
+    {{ form.email.label }}
+    {{ form.email() }}
+    {% for error in form.email.errors %}
         {{error}}
     {% endfor %}
     <br>
@@ -17,9 +29,9 @@
         {{error}}
     {% endfor %}
     <br>
-    {{ form.password2.label }}
-    {{ form.password2() }}
-    {% for error in form.password2.errors %}
+    {{ form.confirm_password.label }}
+    {{ form.confirm_password() }}
+    {% for error in form.confirm_password.errors %}
         {{error}}
     {% endfor %}
     <br>
