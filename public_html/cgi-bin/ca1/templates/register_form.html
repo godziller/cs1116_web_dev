@@ -36,6 +36,11 @@
     {% endfor %}
     <br>
     {{ form.submit() }}
+
+    <br>
+    <p>Already have an account?</p>
+    <a href="{{ url_for('login')}}" class="btn btn-primary ">Login</a>
+
 </form>
 
 {%endblock%}

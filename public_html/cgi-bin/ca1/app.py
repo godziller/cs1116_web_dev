@@ -100,7 +100,7 @@ def login():
 @app.route("/logout", methods=["GET", "POST"]) 
 def logout():
     session.clear()
-    return redirect( url_for("index"))
+    return redirect( url_for("register"))
 
 # @app.route("/unsubscribe", methods=["GET", "POST"]) TODO:
 # def unsubscribe():
@@ -113,8 +113,10 @@ This section are all task route functions
 @app.route("/list_tasks", methods=["GET", "POST"]) #TODO:
 def list_tasks():
     form = view_task_form()
+    user_id = str(session["user_id"])
+
     db = get_db()
-    tasks = db.execute("""SELECT * FROM tasks;""").fetchall()
+    tasks = db.execute("""SELECT * FROM tasks WHERE user_id = ?;""", (user_id)).fetchall()
     if form.validate_on_submit():
         print('here')
 
