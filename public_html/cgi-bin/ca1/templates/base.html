@@ -1,19 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %} {% endblock %}</title>
-
+    <title>To Do Application</title>
     <style>
-        nav a {
-            color: #d64161;
-            font-size: 3em;
-            margin-left: 50px;
+        .navbar {
+            height: 100%;
+            width: 200px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #f0f0f0;
+            overflow-x: hidden;
+            padding-top: 20px;
+        }
+        .navbar a {
+            padding: 6px 8px 6px 16px;
             text-decoration: none;
+            font-size: 20px;
+            color: black;
+            display: block;
+        }
+        .navbar a:hover {
+            background-color: #ddd;
         }
     </style>
 </head>
 <body>
-    {% block content %} {% endblock %}
+
+<!-- This shoud change the navigation bar depending on user logged in or not. -->
+<div class="navbar">
+    <!-- Check if a user is logged in. -->
+    {% if 'user_id' in session %}
+    <a href="{{ url_for('list_tasks') }}">List Tasks</a>
+    <a href="{{ url_for('add_task') }}">Add Task</a>    
+    <a href="{{ url_for('logout') }}">Logout</a>
+ 
+        <!-- Otherwise If a user is not logged in, show these options-->
+    {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+</div>
+
+<!-- This is the main page showing the current selected view -->
+<div style="margin-left: 200px; padding: 20px;">
+    {% block content %}
+    {% endblock %}
+</div>
+
 </body>
 </html>
