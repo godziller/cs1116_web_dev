@@ -28,6 +28,6 @@ select * from tasks;
 
 select * from users
 DELETE FROM users
-DROP TABLE users
+DROP TABLE tasks
 
 

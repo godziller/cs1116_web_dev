@@ -78,7 +78,8 @@ def login():
             session["email"] = email
             next_page = request.args.get("next")
             if not next_page:
-                next_page = url_for("index")
+                #next_page = url_for("index")
+                next_page = url_for("list_tasks")
             return redirect(next_page)
     return render_template("login_form.html", form=form)
 
@@ -99,7 +100,17 @@ This section are all task route functions
 @app.route("/list_tasks", methods=["GET", "POST"]) #TODO:
 def list_tasks():
     form = view_task_form()
-    return render_template("view_task_form.html", form=form)
+    db = get_db()
+    tasks = db.execute("""SELECT * FROM tasks;""").fetchall()
+    if form.validate_on_submit():
+        print('here')
+
+        #return redirect(url_for(add_task))
+    
+
+    return render_template("view_task_form.html",tasks=tasks, form=form, caption='Upcoming Tasks')
+
+    
 
 
 # @app.route("/update_task", methods=["GET", "POST"]) TODO:
@@ -114,15 +125,18 @@ def add_task():
     return render_template("create_task_form.html", form=form)
 
 
+'''
+
 @app.route("/get_upcoming_tasks", methods=["GET", "POST"]) #TODO:
 def get_upcoming_tasks():
 # for today, for this week, for time window?
     form = view_task_form()
-    db = get_db()
-    tasks = db.execute("""SELECT * FROM tasks;""").fetchall()
- 
-    return render_template("view_task_form.html", form=form, tasks=tasks, caption='Upcoming Tasks')
 
+
+
+
+    return render_template("view_task_form.html", form=form, tasks=tasks, caption='Upcoming Tasks')
+'''
 
 '''
 this section are all project route functions

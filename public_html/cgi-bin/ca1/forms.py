@@ -13,15 +13,16 @@ class create_task_form(FlaskForm):
 
 class login_form(FlaskForm):
     email = StringField("Email: ", validators=[InputRequired()])
-    password = StringField("Password: ", validators=[InputRequired()])
+    password = PasswordField("Password: ", validators=[InputRequired()])
     submit = SubmitField("Log In")
 
 
 class logout_form(FlaskForm):
     logout = SelectField('Logout')
 
+
 class view_task_form(FlaskForm):
-    message = StringField()
+    add_task = SubmitField("Add Task")
     
 
 class register_form(FlaskForm):

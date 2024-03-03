@@ -3,6 +3,7 @@
 {% block content %}
 
 <form action="" method="POST" novalidate> 
+
     {% if tasks %}
     <table>
         <caption>{{ caption }}</caption>
@@ -26,10 +27,12 @@
     {% else %}
     <p>No tasks set</p>
     {% endif %}
+
+    {{form.add_task()}}
+
 </form>
 
-{{ message }}
 
 {{ error }}
  
-{% endblock %}
+{% endblock %}  
