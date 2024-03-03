@@ -19,6 +19,8 @@ This section are all user login route functions
 @app.before_request
 def load_logged_in_user():
     g.user = session.get("user_id", None)
+    #All functions need db, so moving here to clean up route code
+    g.db = get_db()
 
 
 def login_required(view):
@@ -41,7 +43,6 @@ def register():
         surname = form.surname.data
         print('got here')
 
-        db = get_db()
         conflict_user = db.execute(
             """SELECT * FROM users 
                WHERE email = ?;""", (email,)).fetchone()
@@ -65,7 +66,6 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        db = get_db()
         user = db.execute(
             """SELECT * FROM users 
                WHERE email = ?;""", (email,)).fetchone()     
@@ -101,7 +101,6 @@ def list_tasks():
     form = view_task_form()
     user_id = str(session["user_id"])
 
-    db = get_db()
     tasks = db.execute("""SELECT * FROM tasks WHERE user_id = ?;""", (user_id)).fetchall()
     if form.validate_on_submit():
         print('here')
@@ -133,7 +132,6 @@ def add_task():
         if due_date <= datetime.now().date():
             form.dueDate.errors.append("Date must be in the future")
         else:
-            db = get_db()
             db.execute("""INSERT INTO tasks (user_id,title, description, due_date, priority) VALUES (?,?,?,?,?)""",
                        (session["user_id"],title, description, due_date, importance ))
             db.commit()
