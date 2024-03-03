@@ -28,7 +28,7 @@
     <p>No tasks set</p>
     {% endif %}
 
-    {{form.add_task()}}
+    <a href="{{ url_for('add_task')}}" class="btn btn-primary ">Add Task</a>
 
 </form>
 

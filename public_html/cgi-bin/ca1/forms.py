@@ -4,8 +4,8 @@ from wtforms.validators import InputRequired
 
 class create_task_form(FlaskForm):
 
-    submit = SubmitField("Submit")
-    description = StringField("Plaintext:", validators=[InputRequired()])
+    title = StringField("Title: ", validators=[InputRequired()])
+    description = StringField("Description:", validators=[InputRequired()])
     dueDate = DateField()
     importance = SelectField("Importance:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
     submit = SubmitField("add")

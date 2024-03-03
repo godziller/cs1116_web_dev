@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for, session, redirect, request
+from flask import Flask, render_template, url_for, session, redirect, request,g
 from forms import create_task_form, login_form, logout_form, view_task_form, register_form
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -15,6 +16,19 @@ Session(app)
 '''
 This section are all user login route functions
 '''
+@app.before_request
+def load_logged_in_user():
+    g.user = session.get("user_id", None)
+
+
+def login_required(view):
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for("login", next=request.url))
+        return view(*args,**kwargs)
+    return wrapped_view
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -31,7 +45,7 @@ def register():
         db = get_db()
         conflict_user = db.execute(
             """SELECT * FROM users 
-               WHERE user_id = ?;""", (user_id,)).fetchone()
+               WHERE email = ?;""", (email,)).fetchone()
 
         if conflict_user is not None:
             return "Username is already taken"
@@ -75,10 +89,9 @@ def login():
             form.password.errors.append("Username or password is incorrect")
         else:
             session.clear()
-            session["email"] = email
+            session["user_id"] = user["user_id"]  # Set the user ID in session
             next_page = request.args.get("next")
             if not next_page:
-                #next_page = url_for("index")
                 next_page = url_for("list_tasks")
             return redirect(next_page)
     return render_template("login_form.html", form=form)
@@ -120,8 +133,24 @@ def list_tasks():
 # def delete_task():
 
 @app.route("/add_task", methods=["GET", "POST"]) #TODO:
+@login_required
 def add_task():
     form = create_task_form()
+    if form.validate_on_submit():
+        title = form.title.data
+        description = form.description.data
+        due_date = form.dueDate.data
+        importance = form.importance.data
+        print('GOT HERE')
+        if due_date <= datetime.now().date():
+            form.dueDate.errors.append("Date must be in the future")
+        else:
+            db = get_db()
+            db.execute("""INSERT INTO tasks (user_id,title, description, due_date, priority) VALUES (?,?,?,?,?)""",
+                       (session["user_id"],title, description, due_date, importance ))
+            db.commit()
+            print('success')
+            return redirect(url_for("list_tasks"))
     return render_template("create_task_form.html", form=form)
 
 
