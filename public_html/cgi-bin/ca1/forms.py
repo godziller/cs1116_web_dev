@@ -32,3 +32,10 @@ class register_form(FlaskForm):
     first_name = StringField("First Name: ", validators=[InputRequired()])
     surname = StringField("Surname: ", validators=[InputRequired()])
     submit = SubmitField("Register")
+
+class edit_task_form(FlaskForm):
+    title = StringField("Title: ", validators=[InputRequired()])
+    description = StringField("Description:", validators=[InputRequired()])
+    dueDate = DateField()
+    importance = SelectField("Importance:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
+    submit = SubmitField("update")

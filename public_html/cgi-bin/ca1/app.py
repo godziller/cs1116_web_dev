@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, session, redirect, request,g
-from forms import create_task_form, login_form, logout_form, view_task_form, register_form
+from forms import create_task_form, login_form, logout_form, view_task_form, register_form, edit_task_form
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
@@ -156,6 +156,38 @@ def add_task():
     return render_template("create_task_form.html", form=form)
 
 
+@app.route("/edit_task/<int:task_id>", methods=["GET", "POST"])
+@login_required
+def edit_task(task_id):
+    db = get_db()
+    task = db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
+    form = edit_task_form()
+
+    if request.method == "GET":
+        # Populate form fields with task details
+        form.title.data = task["title"]
+        form.description.data = task["description"]
+        form.dueDate.data = task["due_date"]
+        form.importance.data = task["priority"]
+
+    if form.validate_on_submit():
+        title = form.title.data
+        description = form.description.data
+        due_date = form.dueDate.data
+        importance = form.importance.data
+        
+        if due_date <= datetime.now().date():
+            form.dueDate.errors.append("Date must be in the future")
+        else:
+            db.execute("""
+                UPDATE tasks 
+                SET title = ?, description = ?, due_date = ?, priority = ?
+                WHERE id = ?
+            """, (title, description, due_date, importance, task_id))
+            db.commit()
+            return redirect(url_for("list_tasks"))
+
+    return render_template("edit_task_form.html", form=form)
 '''
 
 @app.route("/get_upcoming_tasks", methods=["GET", "POST"]) #TODO:
