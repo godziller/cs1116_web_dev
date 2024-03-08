@@ -39,3 +39,4 @@ class edit_task_form(FlaskForm):
     dueDate = DateField()
     importance = SelectField("Importance:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
     submit = SubmitField("update")
+    delete = SubmitField("Delete")

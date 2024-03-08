@@ -1,6 +1,5 @@
-let canvas;
-let context;
-            
+let canvas = document.getElementById("Canvas");
+let context =  canvas.getContext("2d");
 let fpsInterval = 1000 / 30; // the denominator is frames-per-second
 let now;
 let then = Date.now();
@@ -8,8 +7,7 @@ let then = Date.now();
 let threshold = 50; // the other declared functions 
 let points = [];
 
-let cavnas = document.getElementById("Canvas");
-
+ 
                 
 document.addEventListener("DOMContentLoaded", init, false);
             
@@ -30,18 +28,16 @@ function draw() {
         y : randint(0,500)
     }
 
-    
+
 
     if (elapsed <= fpsInterval) {
         return;
     }
     then = now - (elapsed % fpsInterval);
-    if ( canvas.getContext){
-        let canvas_context = canvas.getContext("2d");
+    context.beginPath();
+    context.moveTo(q.x,q,y)
+    context.lineTo(q.x,q,y)
 
-        canvas_context.beginPath();
-        canvas_context.moveTo(x,y)
-    }
 }
 
 function randint(min, max) {

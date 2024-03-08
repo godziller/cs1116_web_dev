@@ -163,13 +163,17 @@ def edit_task(task_id):
     task = db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
     form = edit_task_form()
 
-    if request.method == "GET":
-        # Populate form fields with task details
-        form.title.data = task["title"]
-        form.description.data = task["description"]
-        form.dueDate.data = task["due_date"]
-        form.importance.data = task["priority"]
+    # Populate form fields with task details
+    form.title.data = task["title"]
+    form.description.data = task["description"]
+    form.dueDate.data = task["due_date"]
+    form.importance.data = task["priority"]
 
+    if request.method == "POST" and "delete" in request.form:  # Check if the delete button is pressed
+        db.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+        db.commit()
+        return redirect(url_for("list_tasks"))
+    
     if form.validate_on_submit():
         title = form.title.data
         description = form.description.data
@@ -186,8 +190,11 @@ def edit_task(task_id):
             """, (title, description, due_date, importance, task_id))
             db.commit()
             return redirect(url_for("list_tasks"))
+        
+    
 
     return render_template("edit_task_form.html", form=form)
+
 '''
 
 @app.route("/get_upcoming_tasks", methods=["GET", "POST"]) #TODO:
