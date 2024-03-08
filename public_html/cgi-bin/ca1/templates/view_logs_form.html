@@ -1,0 +1,40 @@
+
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="../static/listTaskStyles.css">
+
+<form action="" method="POST" novalidate> 
+
+
+    {% if logs %}
+    <table>
+
+        <caption>{{ caption }}</caption>
+    
+        <tr>
+            <th>Timestamp</th>
+            <th>IP Address</th>
+            <th>Email</th>
+            <th>Endpoint</th>
+            
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log['time'] }}</td>
+            <td>{{ log['ip_addr'] }}</td>
+            <td>{{ log['user_email'] }}</td>
+            <td>{{ log['endpoint'] }}</td>
+
+        </tr>
+        {% endfor %}
+        {% endif %}
+
+    </table>
+
+
+</form>
+
+
+{{ error }}
+ 
+{% endblock %}  

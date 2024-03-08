@@ -25,6 +25,7 @@ CREATE TABLE users (
 
 CREATE TABLE traffic_logs(
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time TIME,
     ip_addr TEXT,
     user_email TEXT,
     endpoint TEXT

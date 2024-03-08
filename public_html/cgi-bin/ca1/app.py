@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, session, redirect, request,g
-from forms import create_task_form, login_form, logout_form, view_task_form, register_form, edit_task_form, AdminLoginForm
+from forms import create_task_form, login_form, view_task_form, register_form, edit_task_form, view_logs_form
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
@@ -12,6 +12,8 @@ app.config["SECRET_KEY"] = "this-is-my-secret-key"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+app.teardown_appcontext(close_db)
+
 
 '''
 This section are all user login route functions
@@ -19,7 +21,8 @@ This section are all user login route functions
 @app.before_request
 def load_logged_in_user():
     g.user = session.get("user_id", None)
-    session_email = session.get("email", None)
+    session_email = session["email"]
+    print(session_email)
 
     #setting databse here to simplify route functions
     db = get_db()
@@ -28,8 +31,8 @@ def load_logged_in_user():
     endpoint = request.endpoint
     time = datetime.now()
 
-    g.db.execute("""INSERT INTO traffic_logs (ip_addr,user_email,endpoint) VALUES (?,?,?)""",
-            (client_ip, session_email, endpoint))
+    g.db.execute("""INSERT INTO traffic_logs (time,ip_addr,user_email,endpoint) VALUES (?,?,?,?)""",
+            (time,client_ip, session_email, endpoint))
     g.db.commit()
 
 def login_required(view):
@@ -141,7 +144,20 @@ def list_tasks():
     return render_template("view_task_form.html",tasks=tasks, form=form, caption='Upcoming Tasks')
 
 
+@app.route("/view_logs", methods=["GET", "POST"]) #TODO:
+def view_logs():
+    form = view_logs_form
+    logs = g.db.execute(("""SELECT * FROM traffic_logs; """)).fetchall()
+    for log in logs:
+        print(log["user_email"])
+    return render_template("view_logs_form.html", form=form, logs=logs)
 
+
+@app.route("/delete_all_logs", methods=["GET", "POST"]) #TODO:
+def delete_all_logs():
+    form = view_logs_form
+    g.db.execute("""DELETE FROM traffic_logs """)
+    return render_template("view_logs_form.html", form=form, logs='')
 
 # @app.route("/update_task", methods=["GET", "POST"]) TODO:
 # def update_task():

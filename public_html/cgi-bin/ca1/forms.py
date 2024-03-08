@@ -41,7 +41,5 @@ class edit_task_form(FlaskForm):
     submit = SubmitField("update")
     delete = SubmitField("Delete")
 
-class AdminLoginForm(FlaskForm):
-    username = StringField('Username', validators=[InputRequired()])
-    password = PasswordField('Password', validators=[InputRequired()])
-    submit = SubmitField('Login')
+class view_logs_form(FlaskForm):
+    delete_logs = SubmitField("Delete Logs")
