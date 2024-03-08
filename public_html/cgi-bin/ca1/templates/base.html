@@ -21,6 +21,12 @@
         <a href="{{ url_for('login') }}">Login</a>
         <a href="{{ url_for('register') }}">Register</a>
     {% endif %}
+
+    {% if 'is_admin' in session %}
+        <h2>Admin Functions</h2>
+        <a href="{{ url_for('list_tasks') }}">Traffic Log</a>
+    {% endif%}
+
 </div>
 
 <!-- This is the main page showing the current selected view -->

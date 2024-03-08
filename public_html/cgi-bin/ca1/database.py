@@ -1,17 +1,20 @@
+from flask import g 
 import os 
 import sqlite3
 
 DATABASE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'todo.db')
 
-db = ""
 
 def get_db():
-    db = sqlite3.connect(DATABASE, detect_types=sqlite3.PARSE_DECLTYPES)
-    db.row_factory = sqlite3.Row
-    return db
-
-def close_db(db, e=None):
-    db.close()
+    if "db" not in g:
+        g.db = sqlite3.connect(DATABASE, detect_types=sqlite3.PARSE_DECLTYPES)
+        g.db.row_factory = sqlite3.Row
+        return g.db
+    
+def close_db(e=None):
+    db = g.pop("db", None)
+    if db  is not None:
+        db.close()
 
 def get_all_tasks(user_id): #TODO:
     """ Get all task for a user

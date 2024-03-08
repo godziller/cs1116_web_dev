@@ -40,3 +40,8 @@ class edit_task_form(FlaskForm):
     importance = SelectField("Importance:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
     submit = SubmitField("update")
     delete = SubmitField("Delete")
+
+class AdminLoginForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    submit = SubmitField('Login')

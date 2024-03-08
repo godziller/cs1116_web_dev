@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, session, redirect, request,g
-from forms import create_task_form, login_form, logout_form, view_task_form, register_form, edit_task_form
+from forms import create_task_form, login_form, logout_form, view_task_form, register_form, edit_task_form, AdminLoginForm
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
@@ -19,7 +19,18 @@ This section are all user login route functions
 @app.before_request
 def load_logged_in_user():
     g.user = session.get("user_id", None)
+    session_email = session.get("email", None)
 
+    #setting databse here to simplify route functions
+    db = get_db()
+    
+    client_ip = request.remote_addr
+    endpoint = request.endpoint
+    time = datetime.now()
+
+    g.db.execute("""INSERT INTO traffic_logs (ip_addr,user_email,endpoint) VALUES (?,?,?)""",
+            (client_ip, session_email, endpoint))
+    g.db.commit()
 
 def login_required(view):
     @wraps(view)
@@ -28,6 +39,8 @@ def login_required(view):
             return redirect(url_for("login", next=request.url))
         return view(*args,**kwargs)
     return wrapped_view
+
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -42,7 +55,6 @@ def register():
         surname = form.surname.data
         print('got here')
 
-        db = get_db()
         conflict_user = db.execute(
             """SELECT * FROM users 
                WHERE email = ?;""", (email,)).fetchone()
@@ -51,20 +63,19 @@ def register():
             return "Username is already taken"
         else:
             print('here')
-            db.execute("""
+            g.db.execute("""
                 INSERT INTO users(user_id, password,first_name,surname,email)
                 VALUES (?,?,?,?,?);""", 
                 (user_id, generate_password_hash(password),first_name,surname,email))
-            db.commit()
+            g.db.commit()
             return redirect(url_for("login"))    
     return render_template("register_form.html", form=form)
     
     
     
 def generate_user_id():
-    db = get_db()
     print('stuck here')
-    last_user = db.execute(
+    last_user = g.db.execute(
         """SELECT user_id FROM users 
            ORDER BY user_id DESC
            LIMIT 1;""").fetchone()
@@ -79,8 +90,7 @@ def login():
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
-        db = get_db()
-        user = db.execute(
+        user = g.db.execute(
             """SELECT * FROM users 
                WHERE email = ?;""", (email,)).fetchone()     
         if user is None:   
@@ -90,6 +100,12 @@ def login():
         else:
             session.clear()
             session["user_id"] = user["user_id"]  # Set the user ID in session
+            session["email"] = user["email"]    # we use this for traffic logging
+
+            if bool(user['is_admin']) is True:
+                session['is_admin'] = True
+                print(' is an admin')
+
             next_page = request.args.get("next")
             if not next_page:
                 next_page = url_for("list_tasks")
@@ -115,8 +131,7 @@ def list_tasks():
     form = view_task_form()
     user_id = str(session["user_id"])
 
-    db = get_db()
-    tasks = db.execute("""SELECT * FROM tasks WHERE user_id = ?;""", (user_id)).fetchall()
+    tasks = g.db.execute("""SELECT * FROM tasks WHERE user_id = ?;""", (user_id)).fetchall()
     if form.validate_on_submit():
         print('here')
 
@@ -147,10 +162,9 @@ def add_task():
         if due_date <= datetime.now().date():
             form.dueDate.errors.append("Date must be in the future")
         else:
-            db = get_db()
-            db.execute("""INSERT INTO tasks (user_id,title, description, due_date, priority) VALUES (?,?,?,?,?)""",
+            g.db.execute("""INSERT INTO tasks (user_id,title, description, due_date, priority) VALUES (?,?,?,?,?)""",
                        (session["user_id"],title, description, due_date, importance ))
-            db.commit()
+            g.db.commit()
             print('success')
             return redirect(url_for("list_tasks"))
     return render_template("create_task_form.html", form=form)
@@ -159,8 +173,7 @@ def add_task():
 @app.route("/edit_task/<int:task_id>", methods=["GET", "POST"])
 @login_required
 def edit_task(task_id):
-    db = get_db()
-    task = db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
+    task = g.db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
     form = edit_task_form()
 
     # Populate form fields with task details
@@ -170,8 +183,8 @@ def edit_task(task_id):
     form.importance.data = task["priority"]
 
     if request.method == "POST" and "delete" in request.form:  # Check if the delete button is pressed
-        db.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
-        db.commit()
+        g.db.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+        g.db.commit()
         return redirect(url_for("list_tasks"))
     
     if form.validate_on_submit():
@@ -183,12 +196,12 @@ def edit_task(task_id):
         if due_date <= datetime.now().date():
             form.dueDate.errors.append("Date must be in the future")
         else:
-            db.execute("""
+            g.db.execute("""
                 UPDATE tasks 
                 SET title = ?, description = ?, due_date = ?, priority = ?
                 WHERE id = ?
             """, (title, description, due_date, importance, task_id))
-            db.commit()
+            g.db.commit()
             return redirect(url_for("list_tasks"))
         
     
