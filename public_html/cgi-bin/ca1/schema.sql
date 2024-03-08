@@ -25,7 +25,7 @@ VALUES
 ;
 
 select * from tasks;
-
+SELECT * FROM tasks WHERE user_id = 1
 select * from users
 DELETE FROM users
 DROP TABLE tasks

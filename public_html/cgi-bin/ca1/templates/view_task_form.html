@@ -1,6 +1,7 @@
 
 {% extends "base.html" %}
 {% block content %}
+<link rel="stylesheet" href="../static/listTaskStyles.css">
 
 <form action="" method="POST" novalidate> 
 
@@ -13,16 +14,17 @@
             <th>Due Date</th>
             <th>Priority</th>
             <th>Status</th>
-            <th>Action</th>
+            <th>Edit</th>
         </tr>
         {% for indivTask in tasks %}
         <tr>
-            <td>{{ indivTask['title'] }}  </td> 
+            <td class="title">{{ indivTask['title'] }}  </td> 
             <td>{{ indivTask['description'] }}</td>
             <td>{{ indivTask['due_date'] }}</td>
             <td>{{ indivTask['priority'] }}</td>
             <td>{{ indivTask['status'] }}</td>
             <td><a href="{{ url_for('edit_task', task_id=indivTask['id']) }}" class="btn btn-primary">Edit Task</a></td>
+
         </tr>
         {% endfor %}
     </table>

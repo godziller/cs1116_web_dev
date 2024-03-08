@@ -125,7 +125,7 @@ def list_tasks():
 
     return render_template("view_task_form.html",tasks=tasks, form=form, caption='Upcoming Tasks')
 
-    
+
 
 
 # @app.route("/update_task", methods=["GET", "POST"]) TODO:
