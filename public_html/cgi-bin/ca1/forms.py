@@ -55,3 +55,4 @@ class update_user_form(FlaskForm):
     confirm_password = PasswordField("Confirm Password: ", validators=[InputRequired()])
     is_admin = SelectField("IS ADMIN", choices=[(0, "FALSE"), (1, "TRUE")])
     submit = SubmitField("Update")
+    delete = SubmitField("Delete")

@@ -110,7 +110,7 @@ def login():
                 print(' is an admin')
                 print(user['is_admin'])
                 print(bool(user['is_admin']))
-                
+
             next_page = request.args.get("next")
             if not next_page:
                 next_page = url_for("list_tasks")
@@ -283,6 +283,7 @@ def view_logs():
 def delete_all_logs():
     form = view_logs_form
     g.db.execute("""DELETE FROM traffic_logs """)
+    g.db.commit()
     return render_template("view_logs_form.html", form=form, logs='')
 
 
@@ -313,7 +314,12 @@ def update_user(user_id):
         form.email.data = user["email"]
         form.password.data = user["password"]
         form.is_admin.data = user["is_admin"]
-
+  
+    if request.method == "POST" and "delete" in request.form:  # Check if the delete button is pressed
+        print("Deleting User")
+        g.db.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
+        g.db.commit()
+        return redirect(url_for("list_users"))
 
     if form.validate_on_submit():
         # Update user data with form data
