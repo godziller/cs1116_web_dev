@@ -20,7 +20,7 @@ CREATE TABLE users (
     first_name TEXT,
     email TEXT,
     password TEXT,
-    is_admin INTEGER DEFAULT 0   /* boolean to identify if user has admin privleges or not */
+    is_admin INTEGER DEFAULT False   /* boolean to identify if user has admin privleges or not */
 );
 
 CREATE TABLE traffic_logs(
@@ -47,6 +47,6 @@ VALUES
 
 select * from tasks;
 select * from users;
-select * from traffic_logs
+select * from traffic_logs;
 
 

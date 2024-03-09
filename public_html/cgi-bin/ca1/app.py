@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, session, redirect, request,g
+from flask import Flask, abort, render_template, url_for, session, redirect, request,g
 from forms import create_task_form, login_form, update_user_form, view_task_form, register_form, edit_task_form, view_logs_form
 from flask_session import Session
 from database import get_db, close_db
@@ -8,11 +8,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
+app.teardown_appcontext(close_db)
 app.config["SECRET_KEY"] = "this-is-my-secret-key"
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-app.teardown_appcontext(close_db)
+
 
 
 '''
@@ -22,8 +23,8 @@ This section are all user login route functions
 def load_logged_in_user():
     g.user = session.get("user_id", None)
     session_email = session.get("email", None)
-    print(session_email)
-
+    g.is_admin = session.get('is_admin', None) # Could use to gate admin functions 
+  
     #setting databse here to simplify route functions
     db = get_db()
     
@@ -40,6 +41,14 @@ def login_required(view):
     def wrapped_view(*args, **kwargs):
         if g.user is None:
             return redirect(url_for("login", next=request.url))
+        return view(*args,**kwargs)
+    return wrapped_view
+
+def admin_required(view):
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.is_admin is None:
+            return render_template("not_authorized.html")
         return view(*args,**kwargs)
     return wrapped_view
 
@@ -99,7 +108,9 @@ def login():
             if bool(user['is_admin']) is True:
                 session['is_admin'] = True
                 print(' is an admin')
-
+                print(user['is_admin'])
+                print(bool(user['is_admin']))
+                
             next_page = request.args.get("next")
             if not next_page:
                 next_page = url_for("list_tasks")
@@ -255,8 +266,9 @@ def edit_task(task_id):
 Routes for Special Admin Functions
 """
 
-@app.route("/admin/view_logs", methods=["GET", "POST"]) #TODO:
+@app.route("/view_logs", methods=["GET", "POST"]) #TODO:
 @login_required
+@admin_required
 def view_logs():
     form = view_logs_form
     logs = g.db.execute(("""SELECT * FROM traffic_logs; """)).fetchall()
@@ -265,24 +277,27 @@ def view_logs():
     return render_template("view_logs_form.html", form=form, logs=logs)
 
 
-@app.route("/admin/delete_all_logs", methods=["GET", "POST"]) #TODO:
+@app.route("/delete_all_logs", methods=["GET", "POST"]) #TODO:
 @login_required
+@admin_required
 def delete_all_logs():
     form = view_logs_form
     g.db.execute("""DELETE FROM traffic_logs """)
     return render_template("view_logs_form.html", form=form, logs='')
 
 
-@app.route("/admin/list_users", methods=["GET"])
+@app.route("/list_users", methods=["GET"])
 @login_required
+@admin_required
 def list_users():
 
     users = g.db.execute("SELECT * FROM users").fetchall()
 
     return render_template("list_users.html", users=users)
 
-@app.route("/admin/update_user/<int:user_id>", methods=["GET", "POST"])
+@app.route("/update_user/<int:user_id>", methods=["GET", "POST"])
 @login_required
+@admin_required
 def update_user(user_id):
 
     user = g.db.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
@@ -303,12 +318,17 @@ def update_user(user_id):
     if form.validate_on_submit():
         # Update user data with form data
         print("In VALIDATE")
+        password = form.password.data
+        email = form.email.data
+        first_name = form.first_name.data
+        surname = form.surname.data
+        is_admin = form.is_admin.data
+
         g.db.execute("""
             UPDATE users 
             SET password = ?, email = ?, first_name = ?, surname = ?, is_admin = ?
             WHERE user_id = ?
-        """, (generate_password_hash(form.password.data), form.email.data,
-              form.first_name.data, form.surname.data, form.is_admin.data, user_id))
+        """, (generate_password_hash(password), email, first_name, surname, is_admin, user_id))
         g.db.commit()
         return redirect(url_for("list_users"))
 

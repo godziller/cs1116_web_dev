@@ -53,5 +53,5 @@ class update_user_form(FlaskForm):
     email = StringField("Email: ", validators=[InputRequired()])
     password = PasswordField("Password: ", validators=[InputRequired(message='password')])
     confirm_password = PasswordField("Confirm Password: ", validators=[InputRequired()])
-    is_admin = SelectField("IS ADMIN", choices=[("False", "FALSE"), ("True", "TRUE")])
+    is_admin = SelectField("IS ADMIN", choices=[(0, "FALSE"), (1, "TRUE")])
     submit = SubmitField("Update")
