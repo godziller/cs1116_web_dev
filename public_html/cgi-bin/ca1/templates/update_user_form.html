@@ -1,5 +1,7 @@
 {%extends "base.html"%}
 {%block content %}
+<link rel="stylesheet" href="../../static/baseStyles.css">
+<link rel="stylesheet" href="../../static/listTaskStyles.css">
 
 <form action="" method="POST" novalidate> 
 
@@ -35,7 +37,6 @@
         {{error}}
     {% endfor %}
     <br>
-    <br>
     {{ form.is_admin.label }}
     {{ form.is_admin() }}
     {% for error in form.is_admin.errors %}
@@ -48,6 +49,9 @@
 
 </form>
 
+
+{{error}}
+ 
 {%endblock%}
 
 cross-site request forgery (CSRF)
