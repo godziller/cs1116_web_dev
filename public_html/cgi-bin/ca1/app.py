@@ -44,14 +44,16 @@ def login_required(view):
     return wrapped_view
 
 
-
+@app.route("/")
+@app.route("/index.html")
+def index():
+    return redirect(url_for("login"))
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     form = register_form()
 
     if form.validate_on_submit():
-        user_id = generate_user_id()  # Generate user ID
         password = form.password.data
         email = form.email.data
         first_name = form.first_name.data
@@ -67,25 +69,14 @@ def register():
         else:
             print('here')
             g.db.execute("""
-                INSERT INTO users(user_id, password,first_name,surname,email)
-                VALUES (?,?,?,?,?);""", 
-                (user_id, generate_password_hash(password),first_name,surname,email))
+                INSERT INTO users( password,first_name,surname,email)
+                VALUES (?,?,?,?);""", 
+                (generate_password_hash(password),first_name,surname,email))
             g.db.commit()
             return redirect(url_for("login"))    
     return render_template("register_form.html", form=form)
     
-    
-    
-def generate_user_id():
-    print('stuck here')
-    last_user = g.db.execute(
-        """SELECT user_id FROM users 
-           ORDER BY user_id DESC
-           LIMIT 1;""").fetchone()
-    if last_user is None:
-        return 1
-    else:
-        return last_user["user_id"] + 1
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -120,7 +111,7 @@ def login():
 @login_required
 def logout():
     session.clear()
-    return redirect( url_for("register"))
+    return redirect( url_for("login"))
 
 # @app.route("/unsubscribe", methods=["GET", "POST"]) TODO:
 # def unsubscribe():
