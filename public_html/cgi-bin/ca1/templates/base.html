@@ -12,8 +12,14 @@
 <div class="navbar">
     <!-- Check if a user is logged in. -->
     {% if 'user_id' in session %}
-    <a href="{{ url_for('list_tasks') }}">List Tasks</a>
-    <a href="{{ url_for('add_task') }}">Add Task</a>    
+    <h2>Tasks Management</h2>
+    <a href="{{ url_for('todays_tasks') }}">Today's Tasks</a>
+    <a href="{{ url_for('this_week_tasks') }}">This Week's Tasks</a>
+    <a href="{{ url_for('next_week_tasks') }}">Next Week's Tasks</a>
+    
+    <a href="{{ url_for('list_tasks') }}">All Tasks</a>
+    <a href="{{ url_for('add_task') }}">Add Task</a>   
+    <br> 
     <a href="{{ url_for('logout') }}">Logout</a>
  
         <!-- Otherwise If a user is not logged in, show these options-->

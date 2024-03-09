@@ -3,7 +3,7 @@ from forms import create_task_form, login_form, view_task_form, register_form, e
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -21,7 +21,7 @@ This section are all user login route functions
 @app.before_request
 def load_logged_in_user():
     g.user = session.get("user_id", None)
-    session_email = session["email"]
+    session_email = session.get("email", None)
     print(session_email)
 
     #setting databse here to simplify route functions
@@ -117,6 +117,7 @@ def login():
 
 
 @app.route("/logout", methods=["GET", "POST"]) 
+@login_required
 def logout():
     session.clear()
     return redirect( url_for("register"))
@@ -130,6 +131,7 @@ This section are all task route functions
 '''
 
 @app.route("/list_tasks", methods=["GET", "POST"]) #TODO:
+@login_required
 def list_tasks():
     form = view_task_form()
     user_id = str(session["user_id"])
@@ -141,29 +143,56 @@ def list_tasks():
         #return redirect(url_for(add_task))
     
 
-    return render_template("view_task_form.html",tasks=tasks, form=form, caption='Upcoming Tasks')
+    return render_template("view_task_form.html",tasks=tasks, form=form, caption='All Tasks')
 
 
-@app.route("/view_logs", methods=["GET", "POST"]) #TODO:
-def view_logs():
-    form = view_logs_form
-    logs = g.db.execute(("""SELECT * FROM traffic_logs; """)).fetchall()
-    for log in logs:
-        print(log["user_email"])
-    return render_template("view_logs_form.html", form=form, logs=logs)
+@app.route("/todays_tasks", methods=["GET", "POST"]) #TODO:
+@login_required
+def todays_tasks():
+    form = view_task_form()
+    user_id = session.get("user_id")
+    today = date.today().isoformat()
+
+    tasks = g.db.execute("""
+        SELECT * FROM tasks 
+        WHERE user_id = ? AND due_date = ?;
+    """, (user_id, today)).fetchall()
+    
+
+    return render_template("view_task_form.html",tasks=tasks, form=form, caption='Todays Tasks')
+
+@app.route("/this_week_tasks", methods=["GET"])
+@login_required
+def this_week_tasks():
+    form = view_task_form()
+    user_id = session.get("user_id")
+    today = date.today()
+    start_of_week = today - timedelta(days=today.weekday())  # Monday of this week
+    end_of_week = start_of_week + timedelta(days=6)          # Sunday of this week
+
+    tasks = g.db.execute("""
+        SELECT * FROM tasks 
+        WHERE user_id = ? AND due_date >= ? AND due_date <= ?;
+    """, (user_id, start_of_week, end_of_week)).fetchall()
+
+    return render_template("view_task_form.html",tasks=tasks, form=form, caption='This Weeks Tasks')
 
 
-@app.route("/delete_all_logs", methods=["GET", "POST"]) #TODO:
-def delete_all_logs():
-    form = view_logs_form
-    g.db.execute("""DELETE FROM traffic_logs """)
-    return render_template("view_logs_form.html", form=form, logs='')
+@app.route("/next_week_tasks", methods=["GET"])
+@login_required
+def next_week_tasks():
+    form = view_task_form()
+    user_id = session.get("user_id")
+    today = date.today()
+    start_of_next_week = today + timedelta(days=(7 - today.weekday()))  # Monday of next week
+    end_of_next_week = start_of_next_week + timedelta(days=6)                 # Sunday of next week
 
-# @app.route("/update_task", methods=["GET", "POST"]) TODO:
-# def update_task():
+    tasks = g.db.execute("""
+        SELECT * FROM tasks 
+        WHERE user_id = ? AND due_date >= ? AND due_date <= ?;
+    """, (user_id, start_of_next_week, end_of_next_week)).fetchall()
 
-# @app.route("/delete_task", methods=["GET", "POST"]) TODO: 
-# def delete_task():
+    return render_template("view_task_form.html",tasks=tasks, form=form, caption='Next Weeks Tasks')
 
 @app.route("/add_task", methods=["GET", "POST"]) #TODO:
 @login_required
@@ -172,14 +201,15 @@ def add_task():
     if form.validate_on_submit():
         title = form.title.data
         description = form.description.data
-        due_date = form.dueDate.data
-        importance = form.importance.data
+        due_date = form.due_date.data
+        priority = form.priority.data
+
         print('GOT HERE')
-        if due_date <= datetime.now().date():
-            form.dueDate.errors.append("Date must be in the future")
+        if due_date < datetime.now().date():
+            form.due_date.errors.append("Date must be in the future")
         else:
             g.db.execute("""INSERT INTO tasks (user_id,title, description, due_date, priority) VALUES (?,?,?,?,?)""",
-                       (session["user_id"],title, description, due_date, importance ))
+                       (session["user_id"],title, description, due_date, priority,  ))
             g.db.commit()
             print('success')
             return redirect(url_for("list_tasks"))
@@ -192,11 +222,15 @@ def edit_task(task_id):
     task = g.db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
     form = edit_task_form()
 
-    # Populate form fields with task details
-    form.title.data = task["title"]
-    form.description.data = task["description"]
-    form.dueDate.data = task["due_date"]
-    form.importance.data = task["priority"]
+
+    # Populate form fields with task details, need to catch this in the GET message
+    # to make sure it does not use old data in the new submit which is a POST
+    if request.method == "GET":
+        form.title.data = task["title"]
+        form.description.data = task["description"]
+        form.due_date.data = task["due_date"]
+        form.priority.data = task["priority"]
+        form.status.data = task["status"]
 
     if request.method == "POST" and "delete" in request.form:  # Check if the delete button is pressed
         g.db.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
@@ -206,17 +240,19 @@ def edit_task(task_id):
     if form.validate_on_submit():
         title = form.title.data
         description = form.description.data
-        due_date = form.dueDate.data
-        importance = form.importance.data
+        due_date = form.due_date.data
+        priority = form.priority.data
+        status = form.status.data
         
-        if due_date <= datetime.now().date():
-            form.dueDate.errors.append("Date must be in the future")
+        if due_date < datetime.now().date():
+            form.due_date.errors.append("Date must be in the future")
         else:
+            print(title, status, priority)
             g.db.execute("""
                 UPDATE tasks 
-                SET title = ?, description = ?, due_date = ?, priority = ?
+                SET title = ?, description = ?, due_date = ?, priority = ?, status = ?
                 WHERE id = ?
-            """, (title, description, due_date, importance, task_id))
+            """, (title, description, due_date, priority, status, task_id))
             g.db.commit()
             return redirect(url_for("list_tasks"))
         
@@ -224,40 +260,23 @@ def edit_task(task_id):
 
     return render_template("edit_task_form.html", form=form)
 
-'''
+"""
+Routes for Special Admin Functions
+"""
 
-@app.route("/get_upcoming_tasks", methods=["GET", "POST"]) #TODO:
-def get_upcoming_tasks():
-# for today, for this week, for time window?
-    form = view_task_form()
-
-
-
-
-    return render_template("view_task_form.html", form=form, tasks=tasks, caption='Upcoming Tasks')
-'''
-
-'''
-this section are all project route functions
-'''
-#@app.route("/add_project", methods=["GET", "POST"]) #TODO:
-#def add_project():
-#    form = todo_form()
-#    return render_template("todo_form.html", form=form)
+@app.route("/view_logs", methods=["GET", "POST"]) #TODO:
+@login_required
+def view_logs():
+    form = view_logs_form
+    logs = g.db.execute(("""SELECT * FROM traffic_logs; """)).fetchall()
+    for log in logs:
+        print(log["user_email"])
+    return render_template("view_logs_form.html", form=form, logs=logs)
 
 
-# @app.route("/delete_project", methods=["GET", "POST"]) TODO:
-# def delete_project():
-
-# @app.route("/list_projects", methods=["GET", "POST"]) TODO:
-# def list_projects():
-
-'''
-This section are all admin special functions
-'''
-
-# @app.route("/adminlogin", methods=["GET", "POST"]) TODO:
-# def adminlogin():
-
-# @app.route("/update_admin_password, methods=["GET", "POST"]) TODO:
-# def update_admin_password():
+@app.route("/delete_all_logs", methods=["GET", "POST"]) #TODO:
+@login_required
+def delete_all_logs():
+    form = view_logs_form
+    g.db.execute("""DELETE FROM traffic_logs """)
+    return render_template("view_logs_form.html", form=form, logs='')

@@ -11,7 +11,7 @@ CREATE TABLE tasks (
     description TEXT,
     due_date DATE,
     priority TEXT DEFAULT 'High',
-    status TEXT DEFAULT 'New'
+    status TEXT DEFAULT 'New' /* Can be New, In Progress, Done, Abandoned */
 );
 
 CREATE TABLE users (

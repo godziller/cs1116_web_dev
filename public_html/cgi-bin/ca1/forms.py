@@ -6,8 +6,8 @@ class create_task_form(FlaskForm):
 
     title = StringField("Title: ", validators=[InputRequired()])
     description = StringField("Description:", validators=[InputRequired()])
-    dueDate = DateField()
-    importance = SelectField("Importance:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
+    due_date = DateField()
+    priority = SelectField("Priority:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
     submit = SubmitField("add")
     
 
@@ -36,8 +36,10 @@ class register_form(FlaskForm):
 class edit_task_form(FlaskForm):
     title = StringField("Title: ", validators=[InputRequired()])
     description = StringField("Description:", validators=[InputRequired()])
-    dueDate = DateField()
-    importance = SelectField("Importance:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
+    due_date = DateField()
+    priority = SelectField("Priority:", choices=[('high', 'High'), ('medium', 'Medium'), ('low', 'Low')], validators=[InputRequired()])
+    status = SelectField("Status", choices=[('New', 'New'), ('In Progress', 'In Progress'), ('Done', 'Done'), ('Abandoned', 'Abandoned')], validators=[InputRequired()])
+
     submit = SubmitField("update")
     delete = SubmitField("Delete")
 
