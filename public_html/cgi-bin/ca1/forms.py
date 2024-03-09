@@ -45,3 +45,13 @@ class edit_task_form(FlaskForm):
 
 class view_logs_form(FlaskForm):
     delete_logs = SubmitField("Delete Logs")
+
+
+class update_user_form(FlaskForm):
+    first_name = StringField("First Name: ", validators=[InputRequired()])
+    surname = StringField("Surname: ", validators=[InputRequired()])
+    email = StringField("Email: ", validators=[InputRequired()])
+    password = PasswordField("Password: ", validators=[InputRequired(message='password')])
+    confirm_password = PasswordField("Confirm Password: ", validators=[InputRequired()])
+    is_admin = SelectField("IS ADMIN", choices=[("False", "FALSE"), ("True", "TRUE")])
+    submit = SubmitField("Update")

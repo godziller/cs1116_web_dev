@@ -30,6 +30,7 @@
 
     {% if 'is_admin' in session %}
         <h2>Admin Functions</h2>
+        <a href="{{ url_for('list_users') }}">Users</a>
         <a href="{{ url_for('view_logs') }}">Traffic Log</a>
         <a href="{{ url_for('delete_all_logs')}}">Delete Logs</a>
     {% endif%}

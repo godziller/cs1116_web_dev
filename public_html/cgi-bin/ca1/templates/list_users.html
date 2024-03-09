@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="../static/listTaskStyles.css">
+
+<form action="" method="POST" novalidate> 
+    <h1>List of Users</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Surname</th>
+                <th>Is Admin</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.user_id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.surname }}</td>
+                    <td>{{user.is_admin}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</form>
+
+{{ error }}
+ 
+{% endblock %}  

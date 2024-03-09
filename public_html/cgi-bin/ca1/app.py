@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, session, redirect, request,g
-from forms import create_task_form, login_form, view_task_form, register_form, edit_task_form, view_logs_form
+from forms import create_task_form, login_form, update_user_form, view_task_form, register_form, edit_task_form, view_logs_form
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
@@ -58,7 +58,7 @@ def register():
         surname = form.surname.data
         print('got here')
 
-        conflict_user = db.execute(
+        conflict_user = g.db.execute(
             """SELECT * FROM users 
                WHERE email = ?;""", (email,)).fetchone()
 
@@ -264,7 +264,7 @@ def edit_task(task_id):
 Routes for Special Admin Functions
 """
 
-@app.route("/view_logs", methods=["GET", "POST"]) #TODO:
+@app.route("/admin/view_logs", methods=["GET", "POST"]) #TODO:
 @login_required
 def view_logs():
     form = view_logs_form
@@ -274,9 +274,51 @@ def view_logs():
     return render_template("view_logs_form.html", form=form, logs=logs)
 
 
-@app.route("/delete_all_logs", methods=["GET", "POST"]) #TODO:
+@app.route("/admin/delete_all_logs", methods=["GET", "POST"]) #TODO:
 @login_required
 def delete_all_logs():
     form = view_logs_form
     g.db.execute("""DELETE FROM traffic_logs """)
     return render_template("view_logs_form.html", form=form, logs='')
+
+
+@app.route("/admin/list_users", methods=["GET"])
+@login_required
+def list_users():
+
+    users = g.db.execute("SELECT * FROM users").fetchall()
+
+    return render_template("list_users.html", users=users)
+
+@app.route("/admin/update_user/<int:user_id>", methods=["GET", "POST"])
+@login_required
+def update_user(user_id):
+
+    user = g.db.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
+    form = update_user_form()
+    print("First Name")
+    print(user["first_name"])   
+    # Populate form fields with task details, need to catch this in the GET message
+    # to make sure it does not use old data in the new submit which is a POST
+    if request.method == "GET":
+        print("In GET")
+        form.first_name.data = user["first_name"]
+        form.surname.data = user["surname"]
+        form.email.data = user["email"]
+        form.password.data = user["password"]
+        form.is_admin.data = user["is_admin"]
+
+
+    if form.validate_on_submit():
+        # Update user data with form data
+        print("In VALIDATE")
+        g.db.execute("""
+            UPDATE users 
+            SET password = ?, email = ?, first_name = ?, surname = ?, is_admin = ?
+            WHERE user_id = ?
+        """, (generate_password_hash(form.password.data), form.email.data,
+              form.first_name.data, form.surname.data, form.is_admin.data, user_id))
+        g.db.commit()
+        return redirect(url_for("list_users"))
+
+    return render_template("update_user_form.html", form=form)

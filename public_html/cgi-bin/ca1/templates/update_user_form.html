@@ -35,13 +35,16 @@
         {{error}}
     {% endfor %}
     <br>
-
-
+    <br>
+    {{ form.is_admin.label }}
+    {{ form.is_admin() }}
+    {% for error in form.is_admin.errors %}
+        {{error}}
+    {% endfor %}
+    <br>
     {{ form.submit() }}
 
     <br>
-    <p>Already have an account?</p>
-    <a href="{{ url_for('login')}}" class="btn btn-primary ">Login</a>
 
 </form>
 
