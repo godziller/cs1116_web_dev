@@ -114,6 +114,7 @@ def login():
             next_page = request.args.get("next")
             if not next_page:
                 next_page = url_for("list_tasks")
+            session.modified = True             # Handle any flask version issues with session object
             return redirect(next_page)
     return render_template("login_form.html", form=form)
 
