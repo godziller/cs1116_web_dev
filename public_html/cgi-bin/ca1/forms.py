@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, SelectField,  IntegerField, DecimalField, DateField, PasswordField
 from wtforms.validators import InputRequired
 
-class create_task_form(FlaskForm):
+class CreateTaskForm(FlaskForm):
 
     title = StringField("Title: ", validators=[InputRequired()])
     description = StringField("Description:", validators=[InputRequired()])
@@ -11,21 +11,21 @@ class create_task_form(FlaskForm):
     submit = SubmitField("add")
     
 
-class login_form(FlaskForm):
+class LoginForm(FlaskForm):
     email = StringField("Email: ", validators=[InputRequired()])
     password = PasswordField("Password: ", validators=[InputRequired()])
     submit = SubmitField("Log In")
 
 
-class logout_form(FlaskForm):
+class LogoutForm(FlaskForm):
     logout = SelectField('Logout')
 
 
-class view_task_form(FlaskForm):
+class ViewTaskForm(FlaskForm):
     add_task = SubmitField("Add Task")
     
 
-class register_form(FlaskForm):
+class RegisterForm(FlaskForm):
     password = PasswordField("Password: ", validators=[InputRequired(message='password')])
     confirm_password = PasswordField("Confirm Password: ", validators=[InputRequired()])
     email = StringField("Email: ", validators=[InputRequired()])
@@ -33,7 +33,7 @@ class register_form(FlaskForm):
     surname = StringField("Surname: ", validators=[InputRequired()])
     submit = SubmitField("Register")
 
-class edit_task_form(FlaskForm):
+class EditTaskForm(FlaskForm):
     title = StringField("Title: ", validators=[InputRequired()])
     description = StringField("Description:", validators=[InputRequired()])
     due_date = DateField()
@@ -43,11 +43,11 @@ class edit_task_form(FlaskForm):
     submit = SubmitField("update")
     delete = SubmitField("Delete")
 
-class view_logs_form(FlaskForm):
+class ViewLogsForm(FlaskForm):
     delete_logs = SubmitField("Delete Logs")
 
 
-class update_user_form(FlaskForm):
+class UpdateUserForm(FlaskForm):
     first_name = StringField("First Name: ", validators=[InputRequired()])
     surname = StringField("Surname: ", validators=[InputRequired()])
     email = StringField("Email: ", validators=[InputRequired()])

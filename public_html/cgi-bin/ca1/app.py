@@ -1,5 +1,5 @@
 from flask import Flask, abort, render_template, url_for, session, redirect, request,g
-from forms import create_task_form, login_form, update_user_form, view_task_form, register_form, edit_task_form, view_logs_form
+from forms import CreateTaskForm, LoginForm, UpdateUserForm, ViewTaskForm, RegisterForm, EditTaskForm, ViewLogsForm
 from flask_session import Session
 from database import get_db, close_db
 from functools import wraps
@@ -60,7 +60,7 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    form = register_form()
+    form = RegisterForm()
 
     if form.validate_on_submit():
         password = form.password.data
@@ -89,7 +89,7 @@ def register():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = login_form()
+    form = LoginForm()
     if form.validate_on_submit():
         email = form.email.data
         password = form.password.data
@@ -135,7 +135,7 @@ This section are all task route functions
 @app.route("/list_tasks", methods=["GET", "POST"]) #TODO:
 @login_required
 def list_tasks():
-    form = view_task_form()
+    form = ViewTaskForm()
     user_id = str(session["user_id"])
 
     tasks = g.db.execute("""SELECT * FROM tasks WHERE user_id = ?;""", (user_id)).fetchall()
@@ -151,7 +151,7 @@ def list_tasks():
 @app.route("/todays_tasks", methods=["GET", "POST"]) #TODO:
 @login_required
 def todays_tasks():
-    form = view_task_form()
+    form = ViewTaskForm()
     user_id = session.get("user_id")
     today = date.today().isoformat()
 
@@ -166,7 +166,7 @@ def todays_tasks():
 @app.route("/this_week_tasks", methods=["GET"])
 @login_required
 def this_week_tasks():
-    form = view_task_form()
+    form = ViewTaskForm()
     user_id = session.get("user_id")
     today = date.today()
     start_of_week = today - timedelta(days=today.weekday())  # Monday of this week
@@ -183,7 +183,7 @@ def this_week_tasks():
 @app.route("/next_week_tasks", methods=["GET"])
 @login_required
 def next_week_tasks():
-    form = view_task_form()
+    form = ViewTaskForm()
     user_id = session.get("user_id")
     today = date.today()
     start_of_next_week = today + timedelta(days=(7 - today.weekday()))  # Monday of next week
@@ -199,7 +199,7 @@ def next_week_tasks():
 @app.route("/add_task", methods=["GET", "POST"]) #TODO:
 @login_required
 def add_task():
-    form = create_task_form()
+    form = CreateTaskForm()
     if form.validate_on_submit():
         title = form.title.data
         description = form.description.data
@@ -222,7 +222,7 @@ def add_task():
 @login_required
 def edit_task(task_id):
     task = g.db.execute("SELECT * FROM tasks WHERE id = ?", (task_id,)).fetchone()
-    form = edit_task_form()
+    form = EditTaskForm()
 
 
     # Populate form fields with task details, need to catch this in the GET message
@@ -270,7 +270,7 @@ Routes for Special Admin Functions
 @login_required
 @admin_required
 def view_logs():
-    form = view_logs_form
+    form = ViewLogsForm
     logs = g.db.execute(("""SELECT * FROM traffic_logs; """)).fetchall()
     for log in logs:
         print(log["user_email"])
@@ -281,7 +281,7 @@ def view_logs():
 @login_required
 @admin_required
 def delete_all_logs():
-    form = view_logs_form
+    form = ViewLogsForm
     g.db.execute("""DELETE FROM traffic_logs """)
     g.db.commit()
     return render_template("view_logs_form.html", form=form, logs='')
@@ -302,7 +302,7 @@ def list_users():
 def update_user(user_id):
 
     user = g.db.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
-    form = update_user_form()
+    form = UpdateUserForm()
     print("First Name")
     print(user["first_name"])   
     # Populate form fields with task details, need to catch this in the GET message
