@@ -15,10 +15,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
-
-'''
-This section are all user login route functions
-'''
 @app.before_request
 def load_logged_in_user():
     g.user = session.get("user_id", None)
@@ -44,6 +40,10 @@ def login_required(view):
         return view(*args,**kwargs)
     return wrapped_view
 
+
+"""
+New wrapper function to protect admin only routes
+"""
 def admin_required(view):
     @wraps(view)
     def wrapped_view(*args, **kwargs):
@@ -57,6 +57,10 @@ def admin_required(view):
 @app.route("/index.html")
 def index():
     return redirect(url_for("login"))
+
+"""
+These next routes do the user login/register/logout functionality
+"""
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -76,7 +80,6 @@ def register():
         if conflict_user is not None:
             return "Username is already taken"
         else:
-            print('here')
             g.db.execute("""
                 INSERT INTO users( password,first_name,surname,email)
                 VALUES (?,?,?,?);""", 
@@ -125,15 +128,13 @@ def logout():
     session.clear()
     return redirect( url_for("login"))
 
-# @app.route("/unsubscribe", methods=["GET", "POST"]) TODO:
-# def unsubscribe():
 
 
 '''
 This section are all task route functions
 '''
 
-@app.route("/list_tasks", methods=["GET", "POST"]) #TODO:
+@app.route("/list_tasks", methods=["GET", "POST"]) 
 @login_required
 def list_tasks():
     form = ViewTaskForm()
@@ -149,7 +150,7 @@ def list_tasks():
     return render_template("view_task_form.html",tasks=tasks, form=form, caption='All Tasks')
 
 
-@app.route("/todays_tasks", methods=["GET", "POST"]) #TODO:
+@app.route("/todays_tasks", methods=["GET", "POST"]) 
 @login_required
 def todays_tasks():
     form = ViewTaskForm()
@@ -197,7 +198,7 @@ def next_week_tasks():
 
     return render_template("view_task_form.html",tasks=tasks, form=form, caption='Next Weeks Tasks')
 
-@app.route("/add_task", methods=["GET", "POST"]) #TODO:
+@app.route("/add_task", methods=["GET", "POST"]) 
 @login_required
 def add_task():
     form = CreateTaskForm()
@@ -267,7 +268,7 @@ def edit_task(task_id):
 Routes for Special Admin Functions
 """
 
-@app.route("/view_logs", methods=["GET", "POST"]) #TODO:
+@app.route("/view_logs", methods=["GET", "POST"]) 
 @login_required
 @admin_required
 def view_logs():
@@ -278,7 +279,7 @@ def view_logs():
     return render_template("view_logs_form.html", form=form, logs=logs)
 
 
-@app.route("/delete_all_logs", methods=["GET", "POST"]) #TODO:
+@app.route("/delete_all_logs", methods=["GET", "POST"]) 
 @login_required
 @admin_required
 def delete_all_logs():
