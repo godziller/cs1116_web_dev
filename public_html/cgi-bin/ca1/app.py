@@ -15,6 +15,19 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 
+"""
+The application has two types of users - a regular user and an admin user.
+Use the register function to register as a new user.
+
+For admin user - the username is Admin and password Admin
+
+The Admin can do everything a regular user can, but has more admin type functions available
+
+Once registered as a regular user, you login using your email and password. Emails are unique and from 
+experience is the typical identification used on the web - hence this is the adopted approach
+
+"""
+
 @app.before_request
 def load_logged_in_user():
     g.user = session.get("user_id", None)   
