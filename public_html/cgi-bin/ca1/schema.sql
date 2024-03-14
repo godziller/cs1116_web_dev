@@ -43,10 +43,11 @@ VALUES
     ('Admin', 'Admin', 'Admin', 'scrypt:32768:8:1$Iu4xUOeqB0cOamG7$4a8efeb4991e1a50b23cb5dee9bc2b4a6e4d21aab938b01e14ebbe88a14d151240d77adb9f67730ba69f6f68f518b9bfa2750d015500d35dea652384b4efcaef'
     , TRUE);
 
-/* adding default layperson to users. checking if is_admin defaults to false*/
+/* adding default layperson to users. checking if is_admin defaults to false
+password for derek@ucc.ie is 'derek' */
 INSERT INTO users (surname, first_name, email, password)
 VALUES
-    ('Bridge', 'Derek', 'derek@ucc.ie', 'scrypt:32768:8:1$Iu4xUOeqB0cOamG7$4a8efeb4991e1a50b23cb5dee9bc2b4a6e4d21aab938b01e14ebbe88a14d151240d77adb9f67730ba69f6f68f518b9bfa2750d015500d35dea652384b4efcaef'
+    ('Bridge', 'Derek', 'derek@ucc.ie', 'scrypt:32768:8:1$cKJFN8WjlzNPTjbD$c0c2e5d378889e8fd6aee36e1de6211c2bf1284c808cea525caa30e5174523a9b5e9627f06de86cd2cf88ab0d7c8a07c61a896d009a62f411a0e296afef860ac'
     );
 
 

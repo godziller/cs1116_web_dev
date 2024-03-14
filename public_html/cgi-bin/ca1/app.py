@@ -23,8 +23,33 @@ For admin user - the username is Admin and password Admin
 
 The Admin can do everything a regular user can, but has more admin type functions available
 
+Derek - I created a user account for you derek@ucc.ie and password is derek - this is set as a regular
+user - but you have access to admin account too - so hope that's ok :-) If not - you can always 
+promote youself to admin which is a feature of an admin user.
+
 Once registered as a regular user, you login using your email and password. Emails are unique and from 
-experience is the typical identification used on the web - hence this is the adopted approach
+experience is the typical identification used on the web - hence this is the adopted approach.
+
+Of note - I took inspiration from class lecture for login_required and created my own to control
+access to admin type functions - you can test these by copying a url as admin, log in as regular user
+and past and try get access - the response should indicate access if forbidden.
+
+I also took advantage of the 'before_request' to catch all traffic logs to collect simple data
+for web traffic which you can look at as admin user.
+
+I used learned lessons from lecture on session object to allow me to know if a logged in user is 
+of type admin or not.
+
+I have included some simple py files that helped me understand how to get 'this week' and next week 
+data for db searchs - you can take a look if interested - weekday_hack.py - and run it as a standard 
+python app.
+
+Also a very basic hack to get me the hash of the Admin passowrd is included to help me get a proper
+sql insert to setup my todo.db with an admin user for convienence.
+
+I've done my best to comment the code so it is understandable, but did not over do it for simple stuff.
+I purposfully left some of my debug print statements in the code that helped me with the project, but
+I thought it might be handy for you running the code to see what's happening.
 
 """
 
@@ -188,7 +213,7 @@ def todays_tasks():
 
 """
 Calculating this and next week.
-date.today() learned in lecture. Then needed to figure out how to create a start and end week
+date.today() learned in lecture/labs. Then needed to figure out how to create a start and end week
 marker to query the db.
 
 Loads of info, but the key to understanding was - https://docs.python.org/3/library/datetime.html#timedelta-objects

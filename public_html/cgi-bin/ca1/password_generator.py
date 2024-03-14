@@ -8,3 +8,9 @@ password = 'Admin'
 generated = generate_password_hash(password)
 
 print(generated)
+
+password = 'derek'
+
+generated = generate_password_hash(password)
+
+print(generated)
