@@ -32,10 +32,15 @@ CREATE TABLE traffic_logs(
 );
 
 /* populate the user table with default admin user */
-/* default admin is me, Darren, password is 'Admin' */
+/* default admin is me, Darren, password is 'Admin' 
+Also adding an Admin/Admin user to be intutitive*/
 INSERT INTO users (surname, first_name, email, password, is_admin)
 VALUES
     ('Counihan', 'Darren', 'darren@counihan.ie', 'scrypt:32768:8:1$Iu4xUOeqB0cOamG7$4a8efeb4991e1a50b23cb5dee9bc2b4a6e4d21aab938b01e14ebbe88a14d151240d77adb9f67730ba69f6f68f518b9bfa2750d015500d35dea652384b4efcaef'
+    , TRUE);
+INSERT INTO users (surname, first_name, email, password, is_admin)
+VALUES
+    ('Admin', 'Admin', 'Admin', 'scrypt:32768:8:1$Iu4xUOeqB0cOamG7$4a8efeb4991e1a50b23cb5dee9bc2b4a6e4d21aab938b01e14ebbe88a14d151240d77adb9f67730ba69f6f68f518b9bfa2750d015500d35dea652384b4efcaef'
     , TRUE);
 
 /* adding default layperson to users. checking if is_admin defaults to false*/

@@ -17,7 +17,7 @@ Session(app)
 
 @app.before_request
 def load_logged_in_user():
-    g.user = session.get("user_id", None)
+    g.user = session.get("user_id", None)   
     session_email = session.get("email", None)
     g.is_admin = session.get('is_admin', None) # Could use to gate admin functions 
   
@@ -30,8 +30,11 @@ def load_logged_in_user():
 
     g.db.execute("""INSERT INTO traffic_logs (time,ip_addr,user_email,endpoint) VALUES (?,?,?,?)""",
             (time,client_ip, session_email, endpoint))
-    g.db.commit()
+    g.db.commit()   # note i use the global g.db, for cleanliness throughout the file 
 
+"""
+setting up the login required function to be used before most of my routes 
+"""
 def login_required(view):
     @wraps(view)
     def wrapped_view(*args, **kwargs):
@@ -53,21 +56,24 @@ def admin_required(view):
     return wrapped_view
 
 
-@app.route("/")
+@app.route("/")  
+
 @app.route("/index.html")
 def index():
     return redirect(url_for("login"))
 
 """
 These next routes do the user login/register/logout functionality
+Note - most websites use email as unique identifier, so we follow this common pattern here.
 """
 
-@app.route("/register", methods=["GET", "POST"]) #TODO: Need to check password and 2nd password are the same.
+@app.route("/register", methods=["GET", "POST"]) 
 def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
         password = form.password.data
+        confirm_password = form.confirm_password.data
         email = form.email.data
         first_name = form.first_name.data
         surname = form.surname.data
@@ -80,12 +86,17 @@ def register():
         if conflict_user is not None:
             return "Username is already taken"
         else:
-            g.db.execute("""
-                INSERT INTO users( password,first_name,surname,email)
-                VALUES (?,?,?,?);""", 
-                (generate_password_hash(password),first_name,surname,email))
-            g.db.commit()
-            return redirect(url_for("login"))    
+            if form.password.data == form.confirm_password.data:
+                g.db.execute("""
+                    INSERT INTO users( password,first_name,surname,email)
+                    VALUES (?,?,?,?);""", 
+                    (generate_password_hash(password),first_name,surname,email))
+                g.db.commit()
+                return redirect(url_for("login"))   
+            else:
+                form.password.errors.append("both passwords must be the same")
+
+
     return render_template("register_form.html", form=form)
     
 
@@ -102,13 +113,13 @@ def login():
         if user is None:   
             form.email.errors.append("email or password is incorrect")
         elif not check_password_hash(user["password"], password):
-            form.password.errors.append("Username or password is incorrect")
+            form.password.errors.append("email or password is incorrect")
         else:
             session.clear()
             session["user_id"] = user["user_id"]  # Set the user ID in session
             session["email"] = user["email"]    # we use this for traffic logging
 
-            if bool(user['is_admin']) is True:
+            if bool(user['is_admin']) is True:  #checking if our sql is_admin variable is a 1 or 0, true or false. i cast it to a bool for use in python
                 session['is_admin'] = True
                 print(' is an admin')
                 print(user['is_admin'])
@@ -128,8 +139,6 @@ def logout():
     session.clear()
     return redirect( url_for("login"))
 
-
-
 '''
 This section are all task route functions
 '''
@@ -142,10 +151,8 @@ def list_tasks():
 
     tasks = g.db.execute("""SELECT * FROM tasks WHERE user_id = ?;""", (user_id)).fetchall()
     if form.validate_on_submit():
-        print('here')
+        print('here')   #useless function used as a milestone test. ignore but to acknowledge progress
 
-        #return redirect(url_for(add_task))
-    
 
     return render_template("view_task_form.html",tasks=tasks, form=form, caption='All Tasks')
 
@@ -155,7 +162,7 @@ def list_tasks():
 def todays_tasks():
     form = ViewTaskForm()
     user_id = session.get("user_id")
-    today = date.today().isoformat()
+    today = date.today()   #finding the current date to create a function that gets tasks in a range (tasks today)
 
     tasks = g.db.execute("""
         SELECT * FROM tasks 
@@ -165,6 +172,18 @@ def todays_tasks():
 
     return render_template("view_task_form.html",tasks=tasks, form=form, caption='Todays Tasks')
 
+
+"""
+Calculating this and next week.
+date.today() learned in lecture. Then needed to figure out how to create a start and end week
+marker to query the db.
+
+Loads of info, but the key to understanding was - https://docs.python.org/3/library/datetime.html#timedelta-objects
+
+Which if I understood correctly, turns a 'day' into its own type, which you can do simple +/- on.
+A bit of hacking and experimenting got me the following 2 pieces of code which work well.
+
+"""
 @app.route("/this_week_tasks", methods=["GET"])
 @login_required
 def this_week_tasks():
@@ -209,7 +228,7 @@ def add_task():
         priority = form.priority.data
 
         print('GOT HERE')
-        if due_date < datetime.now().date():
+        if due_date < datetime.now().date():    #check to see if date is beyond the current
             form.due_date.errors.append("Date must be in the future")
         else:
             g.db.execute("""INSERT INTO tasks (user_id,title, description, due_date, priority) VALUES (?,?,?,?,?)""",
