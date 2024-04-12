@@ -358,7 +358,7 @@ def list_users():
 @app.route("/update_user/<int:user_id>", methods=["GET", "POST"])
 @login_required
 @admin_required
-def update_user(user_id): #TODO: Need to check password and 2nd password are the same.
+def update_user(user_id): 
 
     user = g.db.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
     form = UpdateUserForm()

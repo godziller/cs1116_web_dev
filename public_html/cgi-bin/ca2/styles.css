@@ -1,0 +1,11 @@
+canvas{
+    background-color: black;
+    width: 50%;
+    height: 50%;
+    image-rendering: pixelated;
+    margin: auto;
+
+    display: block;
+    margin: 1em auto;   
+}
+
