@@ -8,7 +8,7 @@
     let now;
     let then = Date.now();
     let request_id;
-
+    let playerIsDead = false;
     let player = {
         x: 100,
         y: 100,
@@ -17,23 +17,13 @@
         frameY : 0,
         xChange: 10,
         yChange: 10,
-        path: [] // Store player's path
+        currentWeapon : ["pistol"],      
+
 
     };
 
     
-
-    let enemy = {
-        x: 200,
-        y: 100,
-        size: 30,
-        frameX: 0,
-        frameY: 0,
-        xChange: 10,
-        ychange: 10,
-        enemyHealth: 3,
-        path: []
-    }
+    let enemies = []; // List to store enemy objects
 
     const framesPerDirection = {
         'up': 0,
@@ -43,6 +33,7 @@
     };
 
     let projectiles = []
+
 
     let floor;
 
@@ -65,34 +56,59 @@
     ];
 
     let furnitureMap = [
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 12, 13, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 18, 19, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [8, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+        [8, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5, 5],
+        [5, 5, 5, 5, 5, 5, 7, 6, 7, 5, 5, 5, 5, 5, 5]
     ];
 
     
     let mapImage = new Image();
+    let furnitureImage = new Image();
     let playerSheet = new Image();
+    let enemySheet = new Image();
     let tilesPerRow = 6  
     let tileSize = 32;
     const animationInterval = 200; // animation speed
+    let canShoot = true;
+
 
     const animationSpeed = 2; // Adjust as needed
     playerSheet.src = 'playerSheet1.png';
+    enemySheet.src = 'enemySheet1.png'
 
     let spriteWidth = 32; // Adjust according to your sprite sheet
     let spriteHeight = 32;
+
+    let nextEnemyId = 0; 
+
+    // WAVE HANDLING //
+    let killCount = 0; // the kill count score
+    let currentWave = 1;
+    let killsPerWave = 5;
+    let enemySpeed = 1;
+    let enemySpawnDelay = 3000;
 
     let moveRight = false;
     let moveLeft = false;
     let moveUp = false;
     let moveDown = false;
+
+    let enemyMoveRight = false;
+    let enemyMoveLeft = false;
+    let enemyMoveUp = false;
+    let enemyMoveDown = false;
 
     let lastMovedDirection = 'right'; // Initialize the last moved direction variable
 
@@ -104,15 +120,7 @@
     document.addEventListener("DOMContentLoaded", init, false);
 
 
-    function shootProjectile() {
-        let projectile = {
-            x: player.x, // Initial x-coordinate of the projectile
-            y: player.y, // Initial y-coordinate of the projectile
-            speed: 30,    // Speed of the projectile
-            direction: playerDirection() // Direction of the projectile
-        };
-        projectiles.push(projectile);
-    }
+
 
 
     function init() {
@@ -123,25 +131,41 @@
         window.addEventListener("keydown", activate, false);
         window.addEventListener("keyup", deactivate, false);
 
-        floor = canvas.height -27;
+        spawnEnemy();
 
+        floor = canvas.height -27;
+        playerIsDead = false;
 
         load_assets([
             {"var": mapImage, "url": './sprites/bedroom.png'},
-            {"var": playerSheet, "url" : "./sprites/playerSheet1.png"}
+            {"var": furnitureImage, "url": './sprites/bedroomSprites.png'},
+            {"var": playerSheet, "url" : "./sprites/playerSheet1.png"},
+            {"var": enemySheet, "url" : "./sprites/enemySheet1.png"}
         ], draw)
         
         window.addEventListener("keydown", function(event) {
-            if (event.code === "Space" && !reloading && remainingBullets > 0) {
-                shootProjectile();
+            if (event.code === "Space" && !reloading && remainingBullets > 0 && canShoot) {
+                shootProjectile();    
+
                 remainingBullets--; 
             }
-             else if (event.code === "KeyR" && reloading === false) {
+            else if (event.code === "KeyR" && reloading === false && canShoot) {
                 reload();
             }
         }, false);
 
-    }
+        window.addEventListener("keydown", function(event) {
+            if (event.code === "Space") {
+                if (playerIsDead) {
+                    location.reload(); // Reload the page to restart the game
+                } else {
+                    // Your existing code for shooting projectiles goes here
+                    // Make sure to handle shooting only when the player is alive
+                }
+            }
+        }, false);
+
+    } 
 
     function draw() {
         window.requestAnimationFrame(draw);
@@ -219,10 +243,66 @@
         }
 
 
+
+        // Start spawning enemies at regular intervals
+        /*
+        for (let enemy of enemies){
+            context.fillStyle = "lime";
+            context.fillRect(enemies.enemy.x , enemies.enemy.y, enemies.enemy.size, enemies.enemy.size);
+        }
+
+        */
+
+
+
+        for (let enemy of enemies) {
+
+            if (enemySheet.complete) {
+                // Calculate the position of the enemy sprite in the sprite sheet
+                let EspriteX = enemy.frameX * spriteWidth; // Adjust according to the position of the sprite in the sprite sheet
+                let EspriteY = enemy.frameY * spriteHeight; // Adjust according to the position of the sprite in the sprite sheet
+        
+                // Draw the enemy sprite
+                context.drawImage(enemySheet, EspriteX, EspriteY, spriteWidth, spriteHeight, enemy.x, enemy.y, enemy.size, enemy.size);
+
+                    //drawing moving animations
+                /*
+                if ((enemyMoveLeft || enemyMoveRight || enemyMoveUp || enemyMoveDown) &&
+                ! (enemyMoveLeft && enemyMoveRight)){
+                   enemy.frameX = (enemy.frameX + 1) % 3;
+                }
+                */
+                if (enemyMoveLeft){
+                    enemy.frameY = 2;
+                }
+                
+                if (enemyMoveRight){
+                    enemy.frameY =  1;
+                }
+                if (enemyMoveUp){
+                    enemy.frameY =  0;
+                }
+                if (enemyMoveDown){
+                    enemy.frameY =  3;
+                }
+
+            } else {
+                // If the player sprite sheet is not loaded yet, draw a placeholder
+                context.fillStyle = "lime";
+                context.fillRect(player.x, player.y, player.size, player.size);
+            }
+
+        }
+
+
+        // Start spawning enemies at regular intervals
+        
+
         //updateAnimation(); // Update player animation
         handlePlayerHit();
         handleProjectileCollision();
-        drawEnemy();
+        hideGameOverOverlay();
+        updateKillCount();
         updateEnemyPosition();
         updateProjectiles();
         drawProjectiles();
@@ -251,18 +331,14 @@
                 if (tile >= 0) {
                     let furnitureRow = Math.floor(tile / tilesPerRow);
                     let furnitureCol = Math.floor(tile % tilesPerRow);
-                    context.drawImage(mapImage, furnitureCol * tileSize, furnitureRow * tileSize, tileSize, tileSize,
+                    context.drawImage(furnitureImage, furnitureCol * tileSize, furnitureRow * tileSize, tileSize, tileSize,
                         c * tileSize, r * tileSize, tileSize, tileSize);
                 }
             }
         }
     }
 
-    function drawEnemy() {
-        // Draw the enemy square at (100, 100)
-        context.fillStyle = 'red';
-        context.fillRect(enemy.x, enemy.y, enemy.size, enemy.size); // Adjust size as needed
-    }
+   
 
     function activate(event) {
         let key = event.key;
@@ -299,52 +375,81 @@
         }
     }
     function updateEnemyPosition() {
-        // Calculate the distance between the player and the enemy
-        let dx = player.x - enemy.x;
-        let dy = player.y - enemy.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
+        for (let enemy of enemies) {
+            if (enemy.alive) {
+                let dx = player.x - enemy.x;
+                let dy = player.y - enemy.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
     
-        if (distance > 0) { // Only update position if distance is greater than 0 to avoid division by zero
-            // Calculate the movement direction towards the player
-            let moveX = dx / distance;
-            let moveY = dy / distance;
-    
-            // Flags to control movement direction
-            let movingHorizontally = Math.abs(dx) > Math.abs(dy);
-            let movingVertically = Math.abs(dy) > Math.abs(dx);
-    
-            // Move the enemy towards the player
-            if ( enemy.x !== player.x) {
-                enemy.x += Math.sign(dx);
-            } else if (enemy.y !== player.y) {
-                enemy.y += Math.sign(dy);
+                if (distance > 0) {
+                    let moveX = dx / distance;
+                    let moveY = dy / distance;
+                    
+                    // Calculate the angle between the enemy's movement vector and the horizontal axis
+                    let angle = Math.atan2(moveY, moveX);
+                    
+                    // Convert angle to degrees
+                    let degrees = angle * (180 / Math.PI);
+                    
+                    // Determine the direction based on angle
+                    if (degrees > -45 && degrees <= 45) {
+                        // Right
+                        enemyMoveLeft = false;
+                        enemyMoveRight = true;
+                        enemyMoveUp = false;
+                        enemyMoveDown = false;
+                    } else if (degrees > 45 && degrees <= 135) {
+                        // Down
+                        enemyMoveLeft = false;
+                        enemyMoveRight = false;
+                        enemyMoveUp = false;
+                        enemyMoveDown = true;
+                    } else if (degrees > 135 || degrees <= -135) {
+                        // Left
+                        enemyMoveLeft = true;
+                        enemyMoveRight = false;
+                        enemyMoveUp = false;
+                        enemyMoveDown = false;
+                    } else {
+                        // Up
+                        enemyMoveLeft = false;
+                        enemyMoveRight = false;
+                        enemyMoveUp = true;
+                        enemyMoveDown = false;
+                    }
+                    
+                    // Update enemy position based on movement
+                    enemy.x += moveX * enemySpeed;
+                    enemy.y += moveY * enemySpeed;
+                }
             }
         }
     }
-
     function checkCollision() {
-        // Calculate the distance between the player and the enemy
-        let dx = player.x - enemy.x;
-        let dy = player.y - enemy.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-    
-        // Define the collision threshold (the distance at which a collision is detected)
-        let collisionThreshold = player.size / 2 + enemy.size / 2;
-    
-        // Check if the distance between the player and the enemy is less than the collision threshold
-        if (distance < collisionThreshold) {
-            // Collision detected
-            return true;
-        } else {
-            // No collision
-            return false;
+        for (let enemy of enemies) {
+            let dx = player.x - enemy.x;
+            let dy = player.y - enemy.y;
+            let distance = Math.sqrt(dx * dx + dy * dy);
+        
+            // Define the collision threshold (the distance at which a collision is detected)
+            let collisionThreshold = player.size / 3 + enemy.size / 3;
+        
+            // Check if the distance between the player and the enemy is less than the collision threshold
+            if (distance < collisionThreshold) {
+                // Collision detected
+                return true;
+            }
         }
+        // No collision detected with any enemy
+        return false;
     }
     
     function handlePlayerHit() {
         if (checkCollision()) {
             // Player has been hit
             console.log("Game Over! You lost.");
+            playerDies();
+            stop();
             // Implement game over logic here
         }
     }
@@ -371,6 +476,41 @@
      
     }
  
+    function shootProjectile() {
+
+        let projectileSize = 5; // Adjust size as needed
+        let xMove = 25;  // this is used to adjust the position of the bullet spawning horizontally to player
+        let projectileSpeed = 30; // Adjust speed as needed
+    
+        let projectile = {
+            speed: projectileSpeed,
+            direction: lastMovedDirection // Use the player's last moved direction
+        };
+    
+        // Adjust projectile position based on direction
+        switch (lastMovedDirection) {
+            case 'up':
+                projectile.x = player.x + xMove; // Spawn projectile horizontally centered with the player
+                projectile.y = player.y ; // Spawn projectile above the player sprite
+                break;
+            case 'down':
+                projectile.x = player.x + xMove; // Spawn projectile horizontally centered with the player
+                projectile.y = player.y + xMove; // Spawn projectile below the player sprite
+                break;
+            case 'left':
+                projectile.x = player.x + xMove; // Spawn projectile to the left of the player sprite
+                projectile.y = player.y + xMove; // Spawn projectile vertically centered with the player
+                break;
+            case 'right':
+                projectile.x = player.x + xMove; // Spawn projectile to the right of the player sprite
+                projectile.y = player.y + xMove; // Spawn projectile vertically centered with the player
+                break;
+            default:
+                break;
+        }
+    
+        projectiles.push(projectile);
+    }
 
     function updateProjectiles() {
         for (let i = 0; i < projectiles.length; i++) {
@@ -399,39 +539,82 @@
 
     function handleProjectileCollision() {
         // Loop through all projectiles
-        for (let i = 0; i < projectiles.length; i++) {
-            let projectile = projectiles[i];
+        for (let enemy of enemies){
+            for (let i = 0; i < projectiles.length; i++) {
+                let projectile = projectiles[i];
     
-            // Check for collision between projectile and enemy
-            if (projectile.x >= enemy.x && projectile.x <= enemy.x + enemy.size &&
-                projectile.y >= enemy.y && projectile.y <= enemy.y + enemy.size) {
-                // Projectile hit the enemy
-                enemy.enemyHealth--; // Decrease enemy health
-                console.log("enemy hit");
+                
 
-                // Remove the projectile
-                projectiles.splice(i, 1);
-                i--; // Update index to account for removed projectile
-    
-                // Check if enemy health is zero
-                if (enemy.enemyHealth === 0) {
-                    console.log("Enemy defeated!");
-                    // Implement despawning logic for the enemy here
-                    // For example, reset its position or remove it from the game
-                    // You can also add scoring or other game-related actions here
-                }
+                    // Check for collision between projectile and enemy
+                    if (projectile.x >= enemy.x && projectile.x <= enemy.x + enemy.size &&
+                        projectile.y >= enemy.y && projectile.y <= enemy.y + enemy.size) {
+                        // Projectile hit the enemy
+                        enemy.enemyHealth--; // Decrease enemy health
+                        let hitEnemy = enemy.id
+                        console.log("Enemy hit - ID:", hitEnemy, "Health:", enemy.enemyHealth);
+
+
+                        // Remove the projectile
+                        projectiles.splice(i, 1);
+                        i--; // Update index to account for removed projectile
+            
+                        // Check if enemy health is zero
+                        if (enemy.enemyHealth === 0 && enemy.id == hitEnemy) {
+                            console.log("Enemy defeated!");
+                            enemy.alive = false;
+                            enemy.x = -100;
+                            enemy.y = -100;
+                            killCount++; // Increment the kill count
+                            updateKillCount();
+
+                            if (killCount % killsPerWave === 0) {
+                                // Increase enemy speed for the next wave
+                                currentWave++;
+                                increaseEnemySpeed();
+                            }
+        
+                        }
+                 }
             }
         }
     }
+    function spawnEnemy() {
+        // Define the properties of the enemy
+        let enemy = {
+            id: nextEnemyId,
+            x: 225,
+            y: 10,
+            size: 60,
+            enemyHealth: 3,
+            frameX: 0,
+            frameY: 0,
+            alive: true // Add this property
+        };
+    
+        nextEnemyId++;
+        enemies.push(enemy);
 
+       
+        // Push the new enemy into the enemies array
+
+        // Example: spawn an enemy every 3 seconds
+
+        // Call spawnEnemy() again after the specified delay
+        setTimeout(spawnEnemy, enemySpawnDelay);
+    }
+
+    
     function drawProjectiles() {
+        
         for (let projectile of projectiles) {
             // Draw projectiles on canvas
             context.fillStyle = 'red'; // Change color as needed
-            context.fillRect(projectile.x, projectile.y, 5, 5); // Change size and shape as needed
+            let projectileSize = 5; // Adjust size as needed
+            let halfSize = projectileSize / 2;
+            context.fillRect(projectile.x - halfSize, projectile.y - halfSize, projectileSize, projectileSize);
+            // Center the rectangle around the projectile's position
         }
     }
-
     function reload() {
         reloading = true;
         console.log("Reloading...");
@@ -499,8 +682,67 @@
         }
     }
 
+    function updateKillCount() {
+        // Update the kill count display on the screen
+        let killCountElement = document.getElementById("killCount");
+        if (killCountElement) {
+            killCountElement.textContent = "Kill Count: " + killCount;
+        }
+    }
+
+    function updateWave() {
+        // Update the current wave display on the screen
+        let waveElement = document.getElementById("wave");
+        if (waveElement) {
+            waveElement.textContent = "Current Wave: " + currentWave;
+            enemySpawnDelay = enemySpawnDelay - 300
+        }
+    }
+
+    function increaseEnemySpeed() {
+        // Increase the speed of enemies for the next wave
+        enemySpeed += 1.5; // Adjust as needed
+        // Loop through all enemies and update their speed
+        for (let enemy of enemies) {
+            enemy.speed = enemySpeed;
+        }
+        updateWave(); // Update the current wave display
+    }
+
+    // Function to show the "You Died" overlay
+    function showGameOverOverlay() {
+        let overlay = document.getElementById("overlay");
+        overlay.classList.remove("hidden");
+    }
+
+    // Function to hide the "You Died" overlay
+    function hideGameOverOverlay() {
+        let overlay = document.getElementById("overlay");
+        overlay.classList.add("hidden");
+    }
+
+    function playerDies() {
+        // Your logic for player death
+        playerIsDead = true;
+        context.fillStyle = "red";
+        context.font = "30px Arial";
+        context.fillText("You Died", canvas.width / 2 - 50, canvas.height / 2);
+        // Show the "You Died" overlay
+        showGameOverOverlay();
+    }
+
+
+    // Example function to restart the game
+    function restartGame() {
+        // Your logic to restart the game
+
+        // Hide the "You Died" overlay
+        hideGameOverOverlay();
+    }
+        
+
     function stop(){
         window.removeEventListener('keydown', activate,false);
         window.removeEventListener('keyup', activate,false);
-        
+        canShoot = false;
     }

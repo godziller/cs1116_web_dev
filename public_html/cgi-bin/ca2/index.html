@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html lang='en'>
-	<head>
-		<meta charset="utf-8"/>
-		<title>Ajax</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialogue</title>
+    <link rel="stylesheet" href="menuStyle.css">
+</head>
+<body>
+    <div class="dialogue-container">
+        <div class="dialogue-box">
+            <p id="dialogue-text"></p>
+        </div>
 
-        <link rel="stylesheet" href="styles.css"/>
-		<script src="main.js" type="module"></script>		
-	</head>
-	<body>
+        <div class="start-prompt">
+            <p>Press Space to start the game</p>
+        </div>
+    </div>
 
-        <canvas id="game_canvas" width="480" height="480"></canvas>
-		<p id="outcome"></p>
-		<p id="coutner"></p>
-	</body>
+
+    <script src="menu.js"></script>
+</body>
 </html>

@@ -1,0 +1,37 @@
+body {
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.dialogue-box {
+    width: 80%;
+    padding: 20px;
+    background-color: #000;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 20px;
+    text-align: center;
+    white-space: pre-line; /* Enable text wrapping */
+}
+
+#dialogue-text {
+    margin: 0;
+    padding: 0;
+}
+
+.dialogue-box span {
+    display: inline-block;
+}
+
+.start-prompt {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #fff;
+    font-family: sans-serif;
+    font-size: 16px;
+}
